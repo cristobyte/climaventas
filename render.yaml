@@ -27,24 +27,17 @@ services:
       - key: FRONTEND_URL
         sync: false
 
-  # Frontend Static Site
+  # Frontend Next.js Service
   - type: web
     name: climaventas-web
-    runtime: static
+    runtime: node
+    region: oregon
+    plan: free
     rootDir: frontend
     buildCommand: npm install && npm run build
-    staticPublishPath: out
+    startCommand: npm run start
     envVars:
       - key: NEXT_PUBLIC_API_URL
         sync: false
-    headers:
-      - path: /*
-        name: X-Frame-Options
-        value: DENY
-      - path: /*
-        name: X-Content-Type-Options
-        value: nosniff
-    routes:
-      - type: rewrite
-        source: /*
-        destination: /index.html
+      - key: PORT
+        value: 3000
