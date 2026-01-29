@@ -9,8 +9,8 @@ services:
     region: oregon
     plan: free
     rootDir: backend
-    buildCommand: npm install --include=dev && npm run prisma:generate && npm run build
-    startCommand: npm run prisma:migrate:prod && npm run start:prod
+    buildCommand: NODE_ENV=development npm ci && npm run prisma:generate && npm run build && ls -la dist
+    startCommand: npm run prisma:migrate:prod && node dist/main
     envVars:
       - key: NODE_ENV
         value: production
