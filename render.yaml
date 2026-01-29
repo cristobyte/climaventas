@@ -15,7 +15,7 @@ services:
       - key: NODE_ENV
         value: production
       - key: DATABASE_URL
-        value: file:/data/climaventas.db
+        value: file:./prisma/climaventas.db
       - key: JWT_SECRET
         generateValue: true
       - key: JWT_EXPIRES_IN
@@ -26,16 +26,11 @@ services:
         value: 7d
       - key: FRONTEND_URL
         sync: false
-    disk:
-      name: climaventas-data
-      mountPath: /data
-      sizeGB: 1
 
   # Frontend Static Site
   - type: web
     name: climaventas-web
     runtime: static
-    region: oregon
     plan: free
     rootDir: frontend
     buildCommand: npm install && npm run build
