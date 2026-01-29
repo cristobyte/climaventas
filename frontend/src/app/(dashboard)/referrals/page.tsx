@@ -174,6 +174,12 @@ export default function ReferralsPage() {
                       {canManage && (
                         <td>
                           <div className="flex items-center gap-2">
+                            <Link
+                              href={`/referrals/${referral.id}`}
+                              className="text-primary hover:underline text-sm"
+                            >
+                              Ver
+                            </Link>
                             {referral.status === 'PENDING' && (
                               <>
                                 <button

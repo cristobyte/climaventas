@@ -1,7 +1,7 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useEffect } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { Header } from '@/components/layout';
 import { referralsApi, customersApi, partnershipsApi } from '@/lib/api';
@@ -11,16 +11,28 @@ import { useAuth } from '@/lib/auth-context';
 
 export default function NewReferralPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const preselectedPartnershipId = searchParams.get('partnershipId');
   const { hasRole } = useAuth();
   const [error, setError] = useState('');
-  const [referralSource, setReferralSource] = useState<'customer' | 'partnership'>('customer');
+  const [referralSource, setReferralSource] = useState<'customer' | 'partnership'>(
+    preselectedPartnershipId ? 'partnership' : 'customer'
+  );
 
   const [formData, setFormData] = useState({
     referrerCustomerId: '',
     referredCustomerId: '',
-    partnershipId: '',
+    partnershipId: preselectedPartnershipId || '',
     bonusAmount: '',
   });
+
+  // Update form if partnershipId changes in URL
+  useEffect(() => {
+    if (preselectedPartnershipId) {
+      setReferralSource('partnership');
+      setFormData(prev => ({ ...prev, partnershipId: preselectedPartnershipId }));
+    }
+  }, [preselectedPartnershipId]);
 
   // Fetch customers for dropdowns
   const { data: customers } = useQuery({
