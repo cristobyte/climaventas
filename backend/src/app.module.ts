@@ -10,6 +10,7 @@ import { InteractionsModule } from './interactions/interactions.module';
 import { PartnershipsModule } from './partnerships/partnerships.module';
 import { ReferralsModule } from './referrals/referrals.module';
 import { AnalyticsModule } from './analytics/analytics.module';
+import { SeedModule } from './seed/seed.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { AnalyticsModule } from './analytics/analytics.module';
     PartnershipsModule,
     ReferralsModule,
     AnalyticsModule,
+    SeedModule,
   ],
 })
 export class AppModule {}
