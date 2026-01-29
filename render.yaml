@@ -10,12 +10,10 @@ services:
     plan: free
     rootDir: backend
     buildCommand: npm install && npm run prisma:generate && npm run build
-    startCommand: npm run prisma:migrate:prod && npm run start:prod
+    startCommand: npm run prisma:migrate:prod && npm run prisma:seed && npm run start:prod
     envVars:
       - key: NODE_ENV
         value: production
-      - key: PORT
-        value: 3001
       - key: DATABASE_URL
         value: file:/data/climaventas.db
       - key: JWT_SECRET
@@ -27,10 +25,7 @@ services:
       - key: JWT_REFRESH_EXPIRES_IN
         value: 7d
       - key: FRONTEND_URL
-        fromService:
-          name: climaventas-web
-          type: web
-          property: host
+        sync: false
     disk:
       name: climaventas-data
       mountPath: /data
@@ -47,10 +42,7 @@ services:
     staticPublishPath: out
     envVars:
       - key: NEXT_PUBLIC_API_URL
-        fromService:
-          name: climaventas-api
-          type: web
-          property: hostport
+        sync: false
     headers:
       - path: /*
         name: X-Frame-Options
