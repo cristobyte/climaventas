@@ -1,0 +1,64 @@
+# Render.com Blueprint for ClimaVentas CRM
+# Deploy both backend and frontend services
+
+services:
+  # Backend API Service
+  - type: web
+    name: climaventas-api
+    runtime: node
+    region: oregon
+    plan: free
+    rootDir: backend
+    buildCommand: npm install && npm run prisma:generate && npm run build
+    startCommand: npm run prisma:migrate:prod && npm run start:prod
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3001
+      - key: DATABASE_URL
+        value: file:/data/climaventas.db
+      - key: JWT_SECRET
+        generateValue: true
+      - key: JWT_EXPIRES_IN
+        value: 1d
+      - key: JWT_REFRESH_SECRET
+        generateValue: true
+      - key: JWT_REFRESH_EXPIRES_IN
+        value: 7d
+      - key: FRONTEND_URL
+        fromService:
+          name: climaventas-web
+          type: web
+          property: host
+    disk:
+      name: climaventas-data
+      mountPath: /data
+      sizeGB: 1
+
+  # Frontend Static Site
+  - type: web
+    name: climaventas-web
+    runtime: static
+    region: oregon
+    plan: free
+    rootDir: frontend
+    buildCommand: npm install && npm run build
+    staticPublishPath: out
+    envVars:
+      - key: NEXT_PUBLIC_API_URL
+        fromService:
+          name: climaventas-api
+          type: web
+          property: hostport
+    headers:
+      - path: /*
+        name: X-Frame-Options
+        value: DENY
+      - path: /*
+        name: X-Content-Type-Options
+        value: nosniff
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html

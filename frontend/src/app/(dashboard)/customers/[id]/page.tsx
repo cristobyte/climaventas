@@ -1,0 +1,379 @@
+'use client';
+
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useParams, useRouter } from 'next/navigation';
+import { Header } from '@/components/layout';
+import { LoadingPage, Badge } from '@/components/ui';
+import { customersApi, interactionsApi } from '@/lib/api';
+import {
+  formatCurrency,
+  formatDate,
+  formatDateTime,
+  stageLabels,
+  stageColors,
+  sourceLabels,
+  statusLabels,
+  statusColors,
+  interactionTypeLabels,
+} from '@/lib/utils';
+import {
+  ArrowLeft,
+  Mail,
+  Phone,
+  MapPin,
+  Calendar,
+  User,
+  Edit2,
+  ShoppingCart,
+  MessageSquare,
+  FileText,
+  PhoneCall,
+  MessageCircle,
+} from 'lucide-react';
+import Link from 'next/link';
+import { useState } from 'react';
+import { useAuth } from '@/lib/auth-context';
+
+const stages = ['PROSPECTING', 'PRE_SALES', 'SALES', 'POST_PURCHASE', 'SERVICE', 'FIDELITY'];
+
+export default function CustomerDetailPage() {
+  const params = useParams();
+  const router = useRouter();
+  const queryClient = useQueryClient();
+  const { hasRole } = useAuth();
+  const canEdit = hasRole(['MANAGEMENT', 'AGENT']);
+
+  const [newStage, setNewStage] = useState('');
+  const [showInteractionForm, setShowInteractionForm] = useState(false);
+
+  const { data: customer, isLoading } = useQuery({
+    queryKey: ['customer', params.id],
+    queryFn: () => customersApi.getById(params.id as string),
+  });
+
+  const updateStageMutation = useMutation({
+    mutationFn: (stage: string) =>
+      customersApi.updateStage(params.id as string, stage),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['customer', params.id] });
+      setNewStage('');
+    },
+  });
+
+  if (isLoading) {
+    return (
+      <div>
+        <Header title="Cargando..." />
+        <LoadingPage />
+      </div>
+    );
+  }
+
+  if (!customer) {
+    return (
+      <div>
+        <Header title="Cliente no encontrado" />
+        <div className="p-6">
+          <p>El cliente no existe o no tienes acceso.</p>
+          <Link href="/customers" className="btn-primary mt-4">
+            Volver a clientes
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  const interactionIcons: Record<string, React.ElementType> = {
+    CALL: PhoneCall,
+    EMAIL: Mail,
+    VISIT: MapPin,
+    WHATSAPP: MessageCircle,
+    NOTE: FileText,
+  };
+
+  return (
+    <div>
+      <Header
+        title={customer.name}
+        subtitle={`${stageLabels[customer.stage]} - ${sourceLabels[customer.source]}`}
+      />
+
+      <div className="p-6">
+        {/* Back Button */}
+        <Link
+          href="/customers"
+          className="inline-flex items-center text-sm text-gray-500 hover:text-gray-700 mb-6"
+        >
+          <ArrowLeft className="h-4 w-4 mr-1" />
+          Volver a clientes
+        </Link>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Main Info */}
+          <div className="lg:col-span-2 space-y-6">
+            {/* Customer Info Card */}
+            <div className="card">
+              <div className="card-header flex items-center justify-between">
+                <h2 className="text-lg font-semibold">Información del Cliente</h2>
+                {canEdit && (
+                  <Link
+                    href={`/customers/${customer.id}/edit`}
+                    className="btn-outline text-sm"
+                  >
+                    <Edit2 className="h-4 w-4 mr-1" />
+                    Editar
+                  </Link>
+                )}
+              </div>
+              <div className="card-body">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-3">
+                      <Mail className="h-5 w-5 text-gray-400" />
+                      <div>
+                        <p className="text-sm text-gray-500">Email</p>
+                        <p className="text-gray-900">{customer.email || '-'}</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <Phone className="h-5 w-5 text-gray-400" />
+                      <div>
+                        <p className="text-sm text-gray-500">Teléfono</p>
+                        <p className="text-gray-900">{customer.phone || '-'}</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <MapPin className="h-5 w-5 text-gray-400" />
+                      <div>
+                        <p className="text-sm text-gray-500">Dirección</p>
+                        <p className="text-gray-900">
+                          {customer.address || '-'}
+                          {customer.city && `, ${customer.city}`}
+                          {customer.region && `, ${customer.region}`}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-3">
+                      <User className="h-5 w-5 text-gray-400" />
+                      <div>
+                        <p className="text-sm text-gray-500">Agente Asignado</p>
+                        <p className="text-gray-900">
+                          {customer.assignedAgent?.name || 'Sin asignar'}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <Calendar className="h-5 w-5 text-gray-400" />
+                      <div>
+                        <p className="text-sm text-gray-500">Fecha de Registro</p>
+                        <p className="text-gray-900">
+                          {formatDate(customer.createdAt)}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                {customer.notes && (
+                  <div className="mt-6 pt-6 border-t border-gray-200">
+                    <p className="text-sm text-gray-500 mb-2">Notas</p>
+                    <p className="text-gray-900">{customer.notes}</p>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Sales History */}
+            <div className="card">
+              <div className="card-header flex items-center justify-between">
+                <h2 className="text-lg font-semibold">
+                  Historial de Ventas ({customer.sales?.length || 0})
+                </h2>
+                {canEdit && (
+                  <Link
+                    href={`/sales/new?customerId=${customer.id}`}
+                    className="btn-primary text-sm"
+                  >
+                    <ShoppingCart className="h-4 w-4 mr-1" />
+                    Nueva Venta
+                  </Link>
+                )}
+              </div>
+              <div className="divide-y divide-gray-200">
+                {customer.sales?.length > 0 ? (
+                  customer.sales.map((sale: any) => (
+                    <div key={sale.id} className="px-6 py-4">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="font-medium text-gray-900">
+                            {sale.product?.name}
+                          </p>
+                          <p className="text-sm text-gray-500">
+                            {formatDate(sale.saleDate)} - Cantidad: {sale.quantity}
+                          </p>
+                        </div>
+                        <div className="text-right">
+                          <p className="font-medium text-gray-900">
+                            {formatCurrency(sale.totalAmount)}
+                          </p>
+                          <span
+                            className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
+                              statusColors[sale.status]
+                            }`}
+                          >
+                            {statusLabels[sale.status]}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <div className="px-6 py-8 text-center text-gray-500">
+                    No hay ventas registradas
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Interactions History */}
+            <div className="card">
+              <div className="card-header flex items-center justify-between">
+                <h2 className="text-lg font-semibold">
+                  Interacciones ({customer.interactions?.length || 0})
+                </h2>
+                {canEdit && (
+                  <button
+                    onClick={() => setShowInteractionForm(true)}
+                    className="btn-outline text-sm"
+                  >
+                    <MessageSquare className="h-4 w-4 mr-1" />
+                    Nueva Interacción
+                  </button>
+                )}
+              </div>
+              <div className="divide-y divide-gray-200">
+                {customer.interactions?.length > 0 ? (
+                  customer.interactions.map((interaction: any) => {
+                    const Icon = interactionIcons[interaction.type] || MessageSquare;
+                    return (
+                      <div key={interaction.id} className="px-6 py-4">
+                        <div className="flex gap-4">
+                          <div className="p-2 bg-gray-100 rounded-lg h-fit">
+                            <Icon className="h-5 w-5 text-gray-600" />
+                          </div>
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2 mb-1">
+                              <span className="font-medium text-gray-900">
+                                {interaction.subject}
+                              </span>
+                              <Badge variant="gray">
+                                {interactionTypeLabels[interaction.type]}
+                              </Badge>
+                            </div>
+                            {interaction.description && (
+                              <p className="text-sm text-gray-600 mb-2">
+                                {interaction.description}
+                              </p>
+                            )}
+                            <p className="text-xs text-gray-500">
+                              {interaction.user?.name} -{' '}
+                              {formatDateTime(interaction.createdAt)}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })
+                ) : (
+                  <div className="px-6 py-8 text-center text-gray-500">
+                    No hay interacciones registradas
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Sidebar */}
+          <div className="space-y-6">
+            {/* Stage Card */}
+            <div className="card">
+              <div className="card-header">
+                <h2 className="text-lg font-semibold">Etapa del Cliente</h2>
+              </div>
+              <div className="card-body">
+                <div className="space-y-3">
+                  {stages.map((stage) => (
+                    <button
+                      key={stage}
+                      onClick={() => {
+                        if (canEdit && stage !== customer.stage) {
+                          updateStageMutation.mutate(stage);
+                        }
+                      }}
+                      disabled={!canEdit || updateStageMutation.isPending}
+                      className={`w-full text-left px-4 py-3 rounded-lg border-2 transition-all ${
+                        stage === customer.stage
+                          ? 'border-primary bg-primary-50'
+                          : 'border-gray-200 hover:border-gray-300'
+                      } ${!canEdit ? 'cursor-default' : 'cursor-pointer'}`}
+                    >
+                      <span
+                        className={`text-sm font-medium ${
+                          stage === customer.stage
+                            ? 'text-primary'
+                            : 'text-gray-700'
+                        }`}
+                      >
+                        {stageLabels[stage]}
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Stats Card */}
+            <div className="card">
+              <div className="card-header">
+                <h2 className="text-lg font-semibold">Estadísticas</h2>
+              </div>
+              <div className="card-body space-y-4">
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-500">Ventas totales</span>
+                  <span className="font-medium">{customer._count?.sales || 0}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-500">Interacciones</span>
+                  <span className="font-medium">
+                    {customer._count?.interactions || 0}
+                  </span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-500">Referidos</span>
+                  <span className="font-medium">
+                    {customer._count?.referralsGiven || 0}
+                  </span>
+                </div>
+                <div className="pt-4 border-t border-gray-200">
+                  <div className="flex justify-between items-center">
+                    <span className="text-gray-500">Valor total</span>
+                    <span className="font-semibold text-lg">
+                      {formatCurrency(
+                        customer.sales?.reduce(
+                          (sum: number, s: any) =>
+                            s.status === 'COMPLETED' ? sum + s.totalAmount : sum,
+                          0
+                        ) || 0
+                      )}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
