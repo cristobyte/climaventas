@@ -1,6 +1,8 @@
 'use client';
 
 import { useAuth } from '@/lib/auth-context';
+import { SidebarProvider, useSidebar } from '@/lib/sidebar-context';
+import { cn } from '@/lib/utils';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import { Sidebar } from './sidebar';
@@ -10,8 +12,9 @@ interface ProtectedLayoutProps {
   requiredRoles?: string[];
 }
 
-export function ProtectedLayout({ children, requiredRoles }: ProtectedLayoutProps) {
+function ProtectedLayoutContent({ children, requiredRoles }: ProtectedLayoutProps) {
   const { isAuthenticated, isLoading, hasRole } = useAuth();
+  const { isCollapsed, isMobile } = useSidebar();
   const router = useRouter();
 
   useEffect(() => {
@@ -56,7 +59,27 @@ export function ProtectedLayout({ children, requiredRoles }: ProtectedLayoutProp
   return (
     <div className="min-h-screen bg-gray-50">
       <Sidebar />
-      <main className="ml-64 min-h-screen">{children}</main>
+      <main
+        className={cn(
+          'min-h-screen transition-all duration-300 ease-in-out',
+          // Mobile: no margin (sidebar overlays)
+          // Desktop collapsed: ml-16 (64px)
+          // Desktop expanded: ml-64 (256px)
+          isMobile ? 'ml-0' : isCollapsed ? 'ml-16' : 'ml-64'
+        )}
+      >
+        {children}
+      </main>
     </div>
+  );
+}
+
+export function ProtectedLayout({ children, requiredRoles }: ProtectedLayoutProps) {
+  return (
+    <SidebarProvider>
+      <ProtectedLayoutContent requiredRoles={requiredRoles}>
+        {children}
+      </ProtectedLayoutContent>
+    </SidebarProvider>
   );
 }

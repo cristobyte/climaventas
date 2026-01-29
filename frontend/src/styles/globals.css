@@ -96,6 +96,42 @@
   }
 }
 
+/* Sidebar transitions */
+.sidebar-transition {
+  @apply transition-all duration-300 ease-in-out;
+}
+
+/* Mobile card view for tables */
+.mobile-card {
+  @apply block md:hidden p-4 bg-white rounded-lg shadow-sm border border-gray-200 mb-3;
+}
+
+/* Hide on mobile */
+.desktop-only {
+  @apply hidden md:block;
+}
+
+/* Show on mobile */
+.mobile-only {
+  @apply block md:hidden;
+}
+
+/* Mobile table wrapper */
+.table-responsive {
+  @apply overflow-x-auto -mx-4 md:mx-0;
+}
+
+.table-responsive > table {
+  @apply min-w-full;
+}
+
+/* Mobile-friendly form spacing */
+@screen md {
+  .form-grid {
+    @apply grid grid-cols-2 gap-4;
+  }
+}
+
 /* Custom scrollbar */
 ::-webkit-scrollbar {
   width: 8px;

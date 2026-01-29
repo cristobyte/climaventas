@@ -6,7 +6,7 @@ import { Header } from '@/components/layout';
 import { LoadingPage, Badge, EmptyState } from '@/components/ui';
 import { productsApi } from '@/lib/api';
 import { formatCurrency, categoryLabels } from '@/lib/utils';
-import { Search, Plus, Package, Edit2, Trash2 } from 'lucide-react';
+import { Search, Plus, Package, Edit2, Trash2, Filter } from 'lucide-react';
 import Link from 'next/link';
 import { useAuth } from '@/lib/auth-context';
 
@@ -19,6 +19,7 @@ export default function ProductsPage() {
   const [search, setSearch] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('');
   const [showInactive, setShowInactive] = useState(false);
+  const [showFilters, setShowFilters] = useState(false);
 
   const { data: products, isLoading } = useQuery({
     queryKey: ['products', { search, category: categoryFilter, isActive: !showInactive ? true : undefined }],
@@ -54,52 +55,70 @@ export default function ProductsPage() {
     <div>
       <Header title="Productos" subtitle="Catálogo de productos HVAC" />
 
-      <div className="p-6">
+      <div className="p-4 md:p-6">
         {/* Actions Bar */}
-        <div className="flex flex-col sm:flex-row gap-4 mb-6">
-          <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-            <input
-              type="text"
-              placeholder="Buscar productos..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="input pl-10"
-            />
+        <div className="flex flex-col gap-4 mb-6">
+          {/* Search and main actions */}
+          <div className="flex flex-col sm:flex-row gap-3">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+              <input
+                type="text"
+                placeholder="Buscar productos..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="input pl-10"
+              />
+            </div>
+
+            <div className="flex gap-2">
+              {/* Filter toggle for mobile */}
+              <button
+                onClick={() => setShowFilters(!showFilters)}
+                className="btn-outline md:hidden flex items-center gap-2"
+              >
+                <Filter className="h-4 w-4" />
+                Filtros
+              </button>
+
+              <Link href="/products/new" className="btn-primary whitespace-nowrap flex-1 sm:flex-none">
+                <Plus className="h-4 w-4 mr-2" />
+                <span className="hidden sm:inline">Nuevo Producto</span>
+                <span className="sm:hidden">Nuevo</span>
+              </Link>
+            </div>
           </div>
 
-          <select
-            value={categoryFilter}
-            onChange={(e) => setCategoryFilter(e.target.value)}
-            className="input w-full sm:w-48"
-          >
-            <option value="">Todas las categorías</option>
-            {categories.slice(1).map((cat) => (
-              <option key={cat} value={cat}>
-                {categoryLabels[cat]}
-              </option>
-            ))}
-          </select>
+          {/* Filters - always visible on desktop, collapsible on mobile */}
+          <div className={`flex flex-col sm:flex-row gap-3 sm:items-center ${showFilters ? 'block' : 'hidden md:flex'}`}>
+            <select
+              value={categoryFilter}
+              onChange={(e) => setCategoryFilter(e.target.value)}
+              className="input w-full sm:w-48"
+            >
+              <option value="">Todas las categorías</option>
+              {categories.slice(1).map((cat) => (
+                <option key={cat} value={cat}>
+                  {categoryLabels[cat]}
+                </option>
+              ))}
+            </select>
 
-          <label className="flex items-center gap-2 text-sm">
-            <input
-              type="checkbox"
-              checked={showInactive}
-              onChange={(e) => setShowInactive(e.target.checked)}
-              className="rounded border-gray-300"
-            />
-            Mostrar inactivos
-          </label>
-
-          <Link href="/products/new" className="btn-primary whitespace-nowrap">
-            <Plus className="h-4 w-4 mr-2" />
-            Nuevo Producto
-          </Link>
+            <label className="flex items-center gap-2 text-sm">
+              <input
+                type="checkbox"
+                checked={showInactive}
+                onChange={(e) => setShowInactive(e.target.checked)}
+                className="rounded border-gray-300"
+              />
+              Mostrar inactivos
+            </label>
+          </div>
         </div>
 
         {/* Products Grid */}
         {products && products.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
             {products.map((product: any) => (
               <div
                 key={product.id}
@@ -124,7 +143,7 @@ export default function ProductsPage() {
                       {product.brand} {product.model}
                     </p>
                   )}
-                  <p className="text-2xl font-bold text-primary mb-3">
+                  <p className="text-xl md:text-2xl font-bold text-primary mb-3">
                     {formatCurrency(product.price)}
                   </p>
                   <div className="flex items-center justify-between text-sm text-gray-500">
