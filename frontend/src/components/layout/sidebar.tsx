@@ -21,6 +21,7 @@ import {
   ChevronLeft,
   ChevronRight,
   X,
+  Target,
 } from 'lucide-react';
 import { useState } from 'react';
 
@@ -42,6 +43,11 @@ const navItems: NavItem[] = [
     label: 'Clientes',
     href: '/customers',
     icon: Users,
+  },
+  {
+    label: 'Leads',
+    href: '/leads',
+    icon: Target,
   },
   {
     label: 'Ventas',

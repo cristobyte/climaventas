@@ -2,7 +2,7 @@ import { Injectable, NotFoundException, ForbiddenException, BadRequestException 
 import { PrismaService } from '../database/prisma.service';
 import { CreateSaleDto } from './dto/create-sale.dto';
 import { UpdateSaleDto } from './dto/update-sale.dto';
-import { SaleStatus, Role, CustomerStage } from '../common/constants';
+import { SaleStatus, Role, CustomerStage, LeadStatus } from '../common/constants';
 
 interface FindAllFilters {
   status?: SaleStatus;
@@ -76,6 +76,13 @@ export class SalesService {
             category: true,
           },
         },
+        lead: {
+          select: {
+            id: true,
+            title: true,
+            closureChance: true,
+          },
+        },
       },
       orderBy: { saleDate: 'desc' },
     });
@@ -96,6 +103,7 @@ export class SalesService {
           },
         },
         product: true,
+        lead: true,
       },
     });
 
@@ -154,6 +162,16 @@ export class SalesService {
     );
     const commissionAmount = totalAmount * commissionRate;
 
+    // If lead is provided, verify it exists
+    if (createSaleDto.leadId) {
+      const lead = await this.prisma.lead.findUnique({
+        where: { id: createSaleDto.leadId },
+      });
+      if (!lead) {
+        throw new BadRequestException('Lead no encontrado');
+      }
+    }
+
     const sale = await this.prisma.sale.create({
       data: {
         customerId: createSaleDto.customerId,
@@ -167,6 +185,8 @@ export class SalesService {
         paymentMethod: createSaleDto.paymentMethod,
         notes: createSaleDto.notes,
         saleDate: createSaleDto.saleDate ? new Date(createSaleDto.saleDate) : new Date(),
+        leadId: createSaleDto.leadId,
+        quotationUrl: createSaleDto.quotationUrl,
       },
       include: {
         customer: true,
@@ -178,8 +198,17 @@ export class SalesService {
           },
         },
         product: true,
+        lead: true,
       },
     });
+
+    // If sale was created from a lead, update lead status to WON
+    if (createSaleDto.leadId) {
+      await this.prisma.lead.update({
+        where: { id: createSaleDto.leadId },
+        data: { status: LeadStatus.WON },
+      });
+    }
 
     // Update customer stage if needed
     if (customer.stage === CustomerStage.PROSPECTING || customer.stage === CustomerStage.PRE_SALES) {

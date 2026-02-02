@@ -345,6 +345,54 @@ export const referralsApi = {
   },
 };
 
+// Leads API
+export const leadsApi = {
+  getAll: async (params?: {
+    status?: string;
+    customerId?: string;
+    agentId?: string;
+    minClosureChance?: number;
+  }) => {
+    const response = await api.get('/leads', { params });
+    return response.data;
+  },
+
+  getById: async (id: string) => {
+    const response = await api.get(`/leads/${id}`);
+    return response.data;
+  },
+
+  getStats: async () => {
+    const response = await api.get('/leads/stats');
+    return response.data;
+  },
+
+  create: async (data: any) => {
+    const response = await api.post('/leads', data);
+    return response.data;
+  },
+
+  update: async (id: string, data: any) => {
+    const response = await api.patch(`/leads/${id}`, data);
+    return response.data;
+  },
+
+  markAsWon: async (id: string) => {
+    const response = await api.patch(`/leads/${id}/won`);
+    return response.data;
+  },
+
+  markAsLost: async (id: string) => {
+    const response = await api.patch(`/leads/${id}/lost`);
+    return response.data;
+  },
+
+  delete: async (id: string) => {
+    const response = await api.delete(`/leads/${id}`);
+    return response.data;
+  },
+};
+
 // Analytics API
 export const analyticsApi = {
   getDashboard: async (params?: { dateFrom?: string; dateTo?: string }) => {

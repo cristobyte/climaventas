@@ -119,3 +119,23 @@ export const referralStatusColors: Record<string, string> = {
   CONVERTED: 'bg-green-100 text-green-700',
   EXPIRED: 'bg-gray-100 text-gray-700',
 };
+
+export const leadStatusLabels: Record<string, string> = {
+  NEW: 'Nuevo',
+  CONTACTED: 'Contactado',
+  QUALIFIED: 'Calificado',
+  PROPOSAL: 'Propuesta',
+  NEGOTIATION: 'Negociación',
+  WON: 'Ganado',
+  LOST: 'Perdido',
+};
+
+export const leadStatusColors: Record<string, string> = {
+  NEW: 'bg-gray-100 text-gray-700',
+  CONTACTED: 'bg-blue-100 text-blue-700',
+  QUALIFIED: 'bg-indigo-100 text-indigo-700',
+  PROPOSAL: 'bg-purple-100 text-purple-700',
+  NEGOTIATION: 'bg-yellow-100 text-yellow-700',
+  WON: 'bg-green-100 text-green-700',
+  LOST: 'bg-red-100 text-red-700',
+};

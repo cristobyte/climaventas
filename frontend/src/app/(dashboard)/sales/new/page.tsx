@@ -4,15 +4,16 @@ import { useState, useEffect, useRef } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { Header } from '@/components/layout';
-import { salesApi, customersApi, productsApi } from '@/lib/api';
+import { salesApi, customersApi, productsApi, leadsApi } from '@/lib/api';
 import { formatCurrency, categoryLabels } from '@/lib/utils';
-import { ArrowLeft, Save, Search, ChevronDown } from 'lucide-react';
+import { ArrowLeft, Save, Search, ChevronDown, FileText, ExternalLink } from 'lucide-react';
 import Link from 'next/link';
 
 export default function NewSalePage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const preselectedCustomerId = searchParams.get('customerId');
+  const preselectedLeadId = searchParams.get('leadId');
   const [error, setError] = useState('');
   const [customerSearch, setCustomerSearch] = useState('');
   const [showCustomerDropdown, setShowCustomerDropdown] = useState(false);
@@ -25,6 +26,15 @@ export default function NewSalePage() {
     unitPrice: 0,
     paymentMethod: 'TRANSFERENCIA',
     notes: '',
+    leadId: preselectedLeadId || '',
+    quotationUrl: '',
+  });
+
+  // If we have a preselected lead, fetch its details
+  const { data: preselectedLead } = useQuery({
+    queryKey: ['leads', preselectedLeadId],
+    queryFn: () => leadsApi.getById(preselectedLeadId as string),
+    enabled: !!preselectedLeadId,
   });
 
   const { data: customers } = useQuery({
@@ -271,6 +281,25 @@ export default function NewSalePage() {
                 </div>
 
                 <div className="md:col-span-2">
+                  <label htmlFor="quotationUrl" className="label">
+                    <FileText className="h-4 w-4 inline mr-1" />
+                    URL de Cotización
+                  </label>
+                  <input
+                    id="quotationUrl"
+                    name="quotationUrl"
+                    type="url"
+                    value={formData.quotationUrl}
+                    onChange={handleChange}
+                    className="input"
+                    placeholder="https://drive.google.com/..."
+                  />
+                  <p className="text-xs text-gray-500 mt-1">
+                    Enlace al documento de cotización (Google Drive, Dropbox, etc.)
+                  </p>
+                </div>
+
+                <div className="md:col-span-2">
                   <label htmlFor="notes" className="label">
                     Notas
                   </label>
@@ -284,6 +313,18 @@ export default function NewSalePage() {
                   />
                 </div>
               </div>
+
+              {/* Lead association info */}
+              {preselectedLead && (
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                  <p className="text-sm text-blue-800">
+                    <strong>Lead asociado:</strong> {preselectedLead.title}
+                  </p>
+                  <p className="text-xs text-blue-600 mt-1">
+                    Esta venta se vinculará automáticamente con el lead seleccionado.
+                  </p>
+                </div>
+              )}
 
               {/* Summary */}
               {formData.productId && (

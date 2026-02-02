@@ -23,6 +23,8 @@ import {
   Check,
   X,
   CheckCircle,
+  ExternalLink,
+  Target,
 } from 'lucide-react';
 import Link from 'next/link';
 import { useAuth } from '@/lib/auth-context';
@@ -177,8 +179,40 @@ export default function SaleDetailPage() {
                     </div>
                   </div>
                 </div>
-                {sale.notes && (
-                  <div className="mt-6 pt-6 border-t border-gray-200">
+                {/* Quotation and Lead info */}
+                <div className="mt-6 pt-6 border-t border-gray-200 space-y-4">
+                  {sale.quotationUrl && (
+                    <div className="flex items-start gap-3">
+                      <FileText className="h-5 w-5 text-gray-400 mt-0.5" />
+                      <div>
+                        <p className="text-sm text-gray-500">Cotización</p>
+                        <a
+                          href={sale.quotationUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-primary hover:underline inline-flex items-center gap-1"
+                        >
+                          Ver documento
+                          <ExternalLink className="h-4 w-4" />
+                        </a>
+                      </div>
+                    </div>
+                  )}
+                  {sale.lead && (
+                    <div className="flex items-start gap-3">
+                      <Target className="h-5 w-5 text-gray-400 mt-0.5" />
+                      <div>
+                        <p className="text-sm text-gray-500">Lead Asociado</p>
+                        <Link
+                          href={`/leads/${sale.lead.id}`}
+                          className="text-primary hover:underline"
+                        >
+                          {sale.lead.title}
+                        </Link>
+                      </div>
+                    </div>
+                  )}
+                  {sale.notes && (
                     <div className="flex items-start gap-3">
                       <FileText className="h-5 w-5 text-gray-400 mt-0.5" />
                       <div>
@@ -186,8 +220,8 @@ export default function SaleDetailPage() {
                         <p className="text-gray-900">{sale.notes}</p>
                       </div>
                     </div>
-                  </div>
-                )}
+                  )}
+                </div>
               </div>
             </div>
 

@@ -36,4 +36,14 @@ export class CreateSaleDto {
   @IsOptional()
   @IsDateString({}, { message: 'La fecha de venta no es válida' })
   saleDate?: string;
+
+  @ApiPropertyOptional({ description: 'ID del lead asociado' })
+  @IsOptional()
+  @IsString()
+  leadId?: string;
+
+  @ApiPropertyOptional({ description: 'URL de la cotización' })
+  @IsOptional()
+  @IsString()
+  quotationUrl?: string;
 }

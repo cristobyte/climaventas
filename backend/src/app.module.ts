@@ -10,6 +10,7 @@ import { InteractionsModule } from './interactions/interactions.module';
 import { PartnershipsModule } from './partnerships/partnerships.module';
 import { ReferralsModule } from './referrals/referrals.module';
 import { AnalyticsModule } from './analytics/analytics.module';
+import { LeadsModule } from './leads/leads.module';
 import { SeedModule } from './seed/seed.module';
 
 @Module({
@@ -23,6 +24,7 @@ import { SeedModule } from './seed/seed.module';
     CustomersModule,
     ProductsModule,
     SalesModule,
+    LeadsModule,
     InteractionsModule,
     PartnershipsModule,
     ReferralsModule,
