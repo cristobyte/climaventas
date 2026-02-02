@@ -4,10 +4,12 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '@/lib/auth-context';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
+import { Eye, EyeOff } from 'lucide-react';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { login, isAuthenticated, isLoading } = useAuth();
@@ -98,16 +100,29 @@ export default function LoginPage() {
               <label htmlFor="password" className="label">
                 Contraseña
               </label>
-              <input
-                id="password"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="input"
-                placeholder="••••••••"
-                required
-                autoComplete="current-password"
-              />
+              <div className="relative">
+                <input
+                  id="password"
+                  type={showPassword ? 'text' : 'password'}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="input pr-10"
+                  placeholder="••••••••"
+                  required
+                  autoComplete="current-password"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                >
+                  {showPassword ? (
+                    <EyeOff className="h-5 w-5" />
+                  ) : (
+                    <Eye className="h-5 w-5" />
+                  )}
+                </button>
+              </div>
             </div>
 
             <button
@@ -144,44 +159,6 @@ export default function LoginPage() {
             </button>
           </form>
 
-          {/* Demo Credentials */}
-          <div className="mt-6 pt-6 border-t border-gray-200">
-            <p className="text-sm text-gray-500 text-center mb-3">
-              Credenciales de demostración:
-            </p>
-            <div className="grid grid-cols-1 gap-2 text-xs">
-              <button
-                type="button"
-                onClick={() => {
-                  setEmail('admin@climatecnologia.cl');
-                  setPassword('Demo2024!');
-                }}
-                className="btn-outline py-1.5 text-xs"
-              >
-                Gerencia
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  setEmail('analista@climatecnologia.cl');
-                  setPassword('Demo2024!');
-                }}
-                className="btn-outline py-1.5 text-xs"
-              >
-                Analista
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  setEmail('vendedor@climatecnologia.cl');
-                  setPassword('Demo2024!');
-                }}
-                className="btn-outline py-1.5 text-xs"
-              >
-                Agente
-              </button>
-            </div>
-          </div>
         </div>
 
         <p className="text-center text-sm text-gray-500 mt-4">
