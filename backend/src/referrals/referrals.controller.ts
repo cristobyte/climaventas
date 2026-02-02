@@ -27,7 +27,7 @@ export class ReferralsController {
   constructor(private readonly referralsService: ReferralsService) {}
 
   @Get()
-  @Roles(Role.MANAGEMENT, Role.ANALYTICS)
+  @Roles(Role.MANAGEMENT, Role.ANALYTICS, Role.AGENT)
   @ApiOperation({ summary: 'Listar todos los referidos' })
   @ApiQuery({ name: 'status', required: false, enum: ReferralStatus })
   @ApiQuery({ name: 'partnershipId', required: false, type: String })
@@ -42,7 +42,7 @@ export class ReferralsController {
   }
 
   @Get('stats')
-  @Roles(Role.MANAGEMENT, Role.ANALYTICS)
+  @Roles(Role.MANAGEMENT, Role.ANALYTICS, Role.AGENT)
   @ApiOperation({ summary: 'Obtener estadísticas de referidos' })
   @ApiResponse({ status: 200, description: 'Estadísticas' })
   getStats() {
@@ -50,7 +50,7 @@ export class ReferralsController {
   }
 
   @Get(':id')
-  @Roles(Role.MANAGEMENT, Role.ANALYTICS)
+  @Roles(Role.MANAGEMENT, Role.ANALYTICS, Role.AGENT)
   @ApiOperation({ summary: 'Obtener un referido por ID' })
   @ApiResponse({ status: 200, description: 'Referido encontrado' })
   @ApiResponse({ status: 404, description: 'Referido no encontrado' })
@@ -67,7 +67,7 @@ export class ReferralsController {
   }
 
   @Patch(':id')
-  @Roles(Role.MANAGEMENT)
+  @Roles(Role.MANAGEMENT, Role.AGENT)
   @ApiOperation({ summary: 'Actualizar un referido' })
   @ApiResponse({ status: 200, description: 'Referido actualizado' })
   @ApiResponse({ status: 404, description: 'Referido no encontrado' })
@@ -76,7 +76,7 @@ export class ReferralsController {
   }
 
   @Patch(':id/convert')
-  @Roles(Role.MANAGEMENT)
+  @Roles(Role.MANAGEMENT, Role.AGENT)
   @ApiOperation({ summary: 'Convertir un referido' })
   @ApiResponse({ status: 200, description: 'Referido convertido' })
   @ApiResponse({ status: 404, description: 'Referido no encontrado' })
@@ -85,7 +85,7 @@ export class ReferralsController {
   }
 
   @Patch(':id/expire')
-  @Roles(Role.MANAGEMENT)
+  @Roles(Role.MANAGEMENT, Role.AGENT)
   @ApiOperation({ summary: 'Expirar un referido' })
   @ApiResponse({ status: 200, description: 'Referido expirado' })
   @ApiResponse({ status: 404, description: 'Referido no encontrado' })

@@ -56,7 +56,7 @@ export default function NewReferralPage() {
     },
   });
 
-  if (!hasRole(['MANAGEMENT'])) {
+  if (!hasRole(['MANAGEMENT', 'AGENT'])) {
     return (
       <div>
         <Header title="Acceso Denegado" />

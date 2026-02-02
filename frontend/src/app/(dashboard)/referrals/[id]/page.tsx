@@ -17,7 +17,7 @@ export default function ReferralDetailPage() {
   const referralId = params.id as string;
   const queryClient = useQueryClient();
   const { hasRole } = useAuth();
-  const canManage = hasRole(['MANAGEMENT']);
+  const canManage = hasRole(['MANAGEMENT', 'AGENT']);
   const [error, setError] = useState('');
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showConvertModal, setShowConvertModal] = useState(false);
@@ -63,7 +63,7 @@ export default function ReferralDetailPage() {
     },
   });
 
-  if (!hasRole(['MANAGEMENT', 'ANALYTICS'])) {
+  if (!hasRole(['MANAGEMENT', 'ANALYTICS', 'AGENT'])) {
     return (
       <div>
         <Header title="Acceso Denegado" />

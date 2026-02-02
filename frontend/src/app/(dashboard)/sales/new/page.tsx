@@ -1,12 +1,12 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { Header } from '@/components/layout';
 import { salesApi, customersApi, productsApi } from '@/lib/api';
 import { formatCurrency, categoryLabels } from '@/lib/utils';
-import { ArrowLeft, Save } from 'lucide-react';
+import { ArrowLeft, Save, Search, ChevronDown } from 'lucide-react';
 import Link from 'next/link';
 
 export default function NewSalePage() {
@@ -14,6 +14,9 @@ export default function NewSalePage() {
   const searchParams = useSearchParams();
   const preselectedCustomerId = searchParams.get('customerId');
   const [error, setError] = useState('');
+  const [customerSearch, setCustomerSearch] = useState('');
+  const [showCustomerDropdown, setShowCustomerDropdown] = useState(false);
+  const customerDropdownRef = useRef<HTMLDivElement>(null);
 
   const [formData, setFormData] = useState({
     customerId: preselectedCustomerId || '',
@@ -28,6 +31,31 @@ export default function NewSalePage() {
     queryKey: ['customers'],
     queryFn: () => customersApi.getAll(),
   });
+
+  // Filter customers based on search
+  const filteredCustomers = customers?.filter((customer: any) => {
+    if (!customerSearch) return true;
+    const searchLower = customerSearch.toLowerCase();
+    return (
+      customer.name?.toLowerCase().includes(searchLower) ||
+      customer.email?.toLowerCase().includes(searchLower) ||
+      customer.phone?.includes(customerSearch)
+    );
+  });
+
+  // Get selected customer name
+  const selectedCustomer = customers?.find((c: any) => c.id === formData.customerId);
+
+  // Handle click outside to close dropdown
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (customerDropdownRef.current && !customerDropdownRef.current.contains(event.target as Node)) {
+        setShowCustomerDropdown(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   const { data: products } = useQuery({
     queryKey: ['products', { isActive: true }],
@@ -115,21 +143,58 @@ export default function NewSalePage() {
                   <label htmlFor="customerId" className="label">
                     Cliente *
                   </label>
-                  <select
-                    id="customerId"
-                    name="customerId"
-                    value={formData.customerId}
-                    onChange={handleChange}
-                    className="input"
-                    required
-                  >
-                    <option value="">Seleccionar cliente</option>
-                    {customers?.map((customer: any) => (
-                      <option key={customer.id} value={customer.id}>
-                        {customer.name} {customer.email ? `- ${customer.email}` : ''}
-                      </option>
-                    ))}
-                  </select>
+                  <div className="relative" ref={customerDropdownRef}>
+                    <div className="relative">
+                      <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                      <input
+                        type="text"
+                        placeholder={selectedCustomer ? selectedCustomer.name : "Buscar cliente..."}
+                        value={customerSearch}
+                        onChange={(e) => {
+                          setCustomerSearch(e.target.value);
+                          setShowCustomerDropdown(true);
+                        }}
+                        onFocus={() => setShowCustomerDropdown(true)}
+                        className={`input pl-10 pr-10 ${selectedCustomer && !customerSearch ? 'text-gray-900' : ''}`}
+                      />
+                      <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                    </div>
+                    {showCustomerDropdown && (
+                      <div className="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-auto">
+                        {filteredCustomers?.length > 0 ? (
+                          filteredCustomers.map((customer: any) => (
+                            <button
+                              key={customer.id}
+                              type="button"
+                              onClick={() => {
+                                setFormData({ ...formData, customerId: customer.id });
+                                setCustomerSearch('');
+                                setShowCustomerDropdown(false);
+                              }}
+                              className={`w-full px-4 py-2 text-left hover:bg-gray-100 ${
+                                formData.customerId === customer.id ? 'bg-primary-50 text-primary' : ''
+                              }`}
+                            >
+                              <p className="font-medium">{customer.name}</p>
+                              <p className="text-sm text-gray-500">
+                                {customer.email || customer.phone || 'Sin contacto'}
+                              </p>
+                            </button>
+                          ))
+                        ) : (
+                          <div className="px-4 py-3 text-sm text-gray-500">
+                            No se encontraron clientes
+                          </div>
+                        )}
+                      </div>
+                    )}
+                    {selectedCustomer && !showCustomerDropdown && (
+                      <p className="text-sm text-gray-500 mt-1">
+                        Seleccionado: {selectedCustomer.name}
+                        {selectedCustomer.email && ` - ${selectedCustomer.email}`}
+                      </p>
+                    )}
+                  </div>
                 </div>
 
                 <div className="md:col-span-2">

@@ -22,16 +22,16 @@ export default function PartnershipsPage() {
         isActive: !showInactive ? true : undefined,
         search: search || undefined,
       }),
-    enabled: hasRole(['MANAGEMENT', 'ANALYTICS']),
+    enabled: hasRole(['MANAGEMENT', 'ANALYTICS', 'AGENT']),
   });
 
   const { data: stats } = useQuery({
     queryKey: ['partnershipsStats'],
     queryFn: () => partnershipsApi.getStats(),
-    enabled: hasRole(['MANAGEMENT', 'ANALYTICS']),
+    enabled: hasRole(['MANAGEMENT', 'ANALYTICS', 'AGENT']),
   });
 
-  if (!hasRole(['MANAGEMENT', 'ANALYTICS'])) {
+  if (!hasRole(['MANAGEMENT', 'ANALYTICS', 'AGENT'])) {
     return (
       <div>
         <Header title="Acceso Denegado" />
@@ -103,7 +103,7 @@ export default function PartnershipsPage() {
             Mostrar inactivas
           </label>
 
-          {hasRole(['MANAGEMENT']) && (
+          {hasRole(['MANAGEMENT', 'AGENT']) && (
             <Link href="/partnerships/new" className="btn-primary whitespace-nowrap">
               <Plus className="h-4 w-4 mr-2" />
               Nueva Alianza
@@ -177,7 +177,7 @@ export default function PartnershipsPage() {
             description="Comienza creando tu primera alianza comercial."
             icon={Building2}
             action={
-              hasRole(['MANAGEMENT'])
+              hasRole(['MANAGEMENT', 'AGENT'])
                 ? {
                     label: 'Nueva Alianza',
                     onClick: () => (window.location.href = '/partnerships/new'),

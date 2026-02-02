@@ -15,19 +15,19 @@ const statuses = ['', 'PENDING', 'CONVERTED', 'EXPIRED'];
 export default function ReferralsPage() {
   const { hasRole } = useAuth();
   const queryClient = useQueryClient();
-  const canManage = hasRole(['MANAGEMENT']);
+  const canManage = hasRole(['MANAGEMENT', 'AGENT']);
   const [statusFilter, setStatusFilter] = useState('');
 
   const { data: referrals, isLoading } = useQuery({
     queryKey: ['referrals', { status: statusFilter }],
     queryFn: () => referralsApi.getAll({ status: statusFilter || undefined }),
-    enabled: hasRole(['MANAGEMENT', 'ANALYTICS']),
+    enabled: hasRole(['MANAGEMENT', 'ANALYTICS', 'AGENT']),
   });
 
   const { data: stats } = useQuery({
     queryKey: ['referralsStats'],
     queryFn: () => referralsApi.getStats(),
-    enabled: hasRole(['MANAGEMENT', 'ANALYTICS']),
+    enabled: hasRole(['MANAGEMENT', 'ANALYTICS', 'AGENT']),
   });
 
   const convertMutation = useMutation({
@@ -40,7 +40,7 @@ export default function ReferralsPage() {
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['referrals'] }),
   });
 
-  if (!hasRole(['MANAGEMENT', 'ANALYTICS'])) {
+  if (!hasRole(['MANAGEMENT', 'ANALYTICS', 'AGENT'])) {
     return (
       <div>
         <Header title="Acceso Denegado" />

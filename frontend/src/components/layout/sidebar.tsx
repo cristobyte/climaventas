@@ -69,13 +69,11 @@ const navItems: NavItem[] = [
     label: 'Alianzas',
     href: '/partnerships',
     icon: Building2,
-    roles: ['ANALYTICS', 'MANAGEMENT'],
   },
   {
     label: 'Referidos',
     href: '/referrals',
     icon: UserPlus,
-    roles: ['ANALYTICS', 'MANAGEMENT'],
   },
   {
     label: 'Usuarios',

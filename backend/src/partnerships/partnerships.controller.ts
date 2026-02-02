@@ -26,7 +26,7 @@ export class PartnershipsController {
   constructor(private readonly partnershipsService: PartnershipsService) {}
 
   @Get()
-  @Roles(Role.MANAGEMENT, Role.ANALYTICS)
+  @Roles(Role.MANAGEMENT, Role.ANALYTICS, Role.AGENT)
   @ApiOperation({ summary: 'Listar todas las alianzas' })
   @ApiQuery({ name: 'isActive', required: false, type: Boolean })
   @ApiQuery({ name: 'search', required: false, type: String })
@@ -36,7 +36,7 @@ export class PartnershipsController {
   }
 
   @Get('stats')
-  @Roles(Role.MANAGEMENT, Role.ANALYTICS)
+  @Roles(Role.MANAGEMENT, Role.ANALYTICS, Role.AGENT)
   @ApiOperation({ summary: 'Obtener estadísticas de alianzas' })
   @ApiResponse({ status: 200, description: 'Estadísticas' })
   getStats() {
@@ -44,7 +44,7 @@ export class PartnershipsController {
   }
 
   @Get(':id')
-  @Roles(Role.MANAGEMENT, Role.ANALYTICS)
+  @Roles(Role.MANAGEMENT, Role.ANALYTICS, Role.AGENT)
   @ApiOperation({ summary: 'Obtener una alianza por ID' })
   @ApiResponse({ status: 200, description: 'Alianza encontrada' })
   @ApiResponse({ status: 404, description: 'Alianza no encontrada' })
@@ -53,7 +53,7 @@ export class PartnershipsController {
   }
 
   @Post()
-  @Roles(Role.MANAGEMENT)
+  @Roles(Role.MANAGEMENT, Role.AGENT)
   @ApiOperation({ summary: 'Crear una nueva alianza' })
   @ApiResponse({ status: 201, description: 'Alianza creada' })
   create(@Body() createPartnershipDto: CreatePartnershipDto) {
@@ -61,7 +61,7 @@ export class PartnershipsController {
   }
 
   @Patch(':id')
-  @Roles(Role.MANAGEMENT)
+  @Roles(Role.MANAGEMENT, Role.AGENT)
   @ApiOperation({ summary: 'Actualizar una alianza' })
   @ApiResponse({ status: 200, description: 'Alianza actualizada' })
   @ApiResponse({ status: 404, description: 'Alianza no encontrada' })

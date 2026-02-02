@@ -26,7 +26,7 @@ export default function PartnershipDetailPage() {
   const partnershipId = params.id as string;
   const queryClient = useQueryClient();
   const { hasRole } = useAuth();
-  const canManage = hasRole(['MANAGEMENT']);
+  const canManage = hasRole(['MANAGEMENT', 'AGENT']);
   const [error, setError] = useState('');
   const [isEditing, setIsEditing] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
@@ -90,7 +90,7 @@ export default function PartnershipDetailPage() {
     },
   });
 
-  if (!hasRole(['MANAGEMENT', 'ANALYTICS'])) {
+  if (!hasRole(['MANAGEMENT', 'ANALYTICS', 'AGENT'])) {
     return (
       <div>
         <Header title="Acceso Denegado" />

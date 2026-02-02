@@ -43,7 +43,7 @@ export default function NewPartnershipPage() {
     },
   });
 
-  if (!hasRole(['MANAGEMENT'])) {
+  if (!hasRole(['MANAGEMENT', 'AGENT'])) {
     return (
       <div>
         <Header title="Acceso Denegado" />
