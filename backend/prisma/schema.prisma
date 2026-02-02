@@ -6,19 +6,9 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
-
-// Note: SQLite doesn't support enums, so we use String fields
-// Valid Role values: AGENT, ANALYTICS, MANAGEMENT
-// Valid CustomerStage values: PROSPECTING, PRE_SALES, SALES, POST_PURCHASE, SERVICE, FIDELITY
-// Valid CustomerSource values: REFERRAL, WEBSITE, PARTNERSHIP, DIRECT, OTHER
-// Valid ProductCategory values: SPLIT, INSTALLATION, MAINTENANCE, ACCESSORY
-// Valid SaleStatus values: PENDING, APPROVED, COMPLETED, CANCELLED
-// Valid InteractionType values: CALL, EMAIL, VISIT, WHATSAPP, NOTE
-// Valid ReferralStatus values: PENDING, CONVERTED, EXPIRED
-// Valid CommissionRuleType values: PRODUCT, AGENT, VOLUME, BONUS
 
 // Users table - System users with roles
 model User {

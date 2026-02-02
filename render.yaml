@@ -1,6 +1,11 @@
 # Render.com Blueprint for ClimaVentas CRM
 # Deploy both backend and frontend services
 
+databases:
+  - name: climaventas-db
+    plan: free
+    region: oregon
+
 services:
   # Backend API Service
   - type: web
@@ -9,13 +14,15 @@ services:
     region: oregon
     plan: free
     rootDir: backend
-    buildCommand: NODE_ENV=development npm ci && npm run prisma:generate && npm run build && ls -la dist
+    buildCommand: NODE_ENV=development npm ci && npm run prisma:generate && npm run build
     startCommand: npm run prisma:migrate:prod && node dist/src/main
     envVars:
       - key: NODE_ENV
         value: production
       - key: DATABASE_URL
-        value: file:./prisma/climaventas.db
+        fromDatabase:
+          name: climaventas-db
+          property: connectionString
       - key: JWT_SECRET
         generateValue: true
       - key: JWT_EXPIRES_IN
