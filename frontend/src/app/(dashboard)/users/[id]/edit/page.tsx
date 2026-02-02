@@ -350,12 +350,10 @@ export default function EditUserPage() {
                   type="button"
                   onClick={() => setShowDeleteConfirm(true)}
                   className="btn-danger order-last sm:order-first"
-                  disabled={isCurrentUser || hasRelatedData}
+                  disabled={isCurrentUser}
                   title={
                     isCurrentUser
                       ? 'No puedes desactivarte a ti mismo'
-                      : hasRelatedData
-                      ? 'No se puede desactivar un usuario con clientes o ventas'
                       : 'Desactivar usuario'
                   }
                 >
@@ -397,6 +395,12 @@ export default function EditUserPage() {
                   ¿Estás seguro de que deseas desactivar al usuario "{user.name}"?
                   El usuario no podrá iniciar sesión, pero sus datos se conservarán.
                 </p>
+                {hasRelatedData && (
+                  <div className="bg-yellow-50 border border-yellow-200 text-yellow-800 p-3 rounded-lg text-sm mb-4">
+                    <strong>Advertencia:</strong> Este usuario tiene {user._count?.assignedCustomers || 0} clientes
+                    y {user._count?.sales || 0} ventas asignadas. Los datos permanecerán en el sistema.
+                  </div>
+                )}
                 <div className="flex justify-end gap-3">
                   <button
                     onClick={() => setShowDeleteConfirm(false)}
