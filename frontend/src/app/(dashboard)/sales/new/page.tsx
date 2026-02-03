@@ -72,6 +72,18 @@ export default function NewSalePage() {
     queryFn: () => productsApi.getAll({ isActive: true }),
   });
 
+  // Fetch leads for the selected customer
+  const { data: leads } = useQuery({
+    queryKey: ['leads', { customerId: formData.customerId }],
+    queryFn: () => leadsApi.getAll({ customerId: formData.customerId }),
+    enabled: !!formData.customerId,
+  });
+
+  // Filter to only show active leads (not WON or LOST)
+  const availableLeads = leads?.filter((lead: any) =>
+    !['WON', 'LOST'].includes(lead.status)
+  ) || [];
+
   const selectedProduct = products?.find((p: any) => p.id === formData.productId);
 
   useEffect(() => {
@@ -207,6 +219,32 @@ export default function NewSalePage() {
                   </div>
                 </div>
 
+                {/* Lead selector - shows leads for selected customer */}
+                {formData.customerId && availableLeads.length > 0 && (
+                  <div className="md:col-span-2">
+                    <label htmlFor="leadId" className="label">
+                      Lead Asociado
+                    </label>
+                    <select
+                      id="leadId"
+                      name="leadId"
+                      value={formData.leadId}
+                      onChange={handleChange}
+                      className="input"
+                    >
+                      <option value="">Sin lead asociado</option>
+                      {availableLeads.map((lead: any) => (
+                        <option key={lead.id} value={lead.id}>
+                          {lead.title} - {lead.closureChance}% prob.
+                        </option>
+                      ))}
+                    </select>
+                    <p className="text-xs text-gray-500 mt-1">
+                      Vincular esta venta con un lead existente del cliente
+                    </p>
+                  </div>
+                )}
+
                 <div className="md:col-span-2">
                   <label htmlFor="productId" className="label">
                     Producto *
@@ -294,9 +332,22 @@ export default function NewSalePage() {
                     className="input"
                     placeholder="https://drive.google.com/..."
                   />
-                  <p className="text-xs text-gray-500 mt-1">
-                    Enlace al documento de cotización (Google Drive, Dropbox, etc.)
-                  </p>
+                  {formData.quotationUrl && (
+                    <a
+                      href={formData.quotationUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1 text-sm text-primary hover:underline mt-2"
+                    >
+                      <ExternalLink className="h-4 w-4" />
+                      Abrir cotización en nueva pestaña
+                    </a>
+                  )}
+                  {!formData.quotationUrl && (
+                    <p className="text-xs text-gray-500 mt-1">
+                      Enlace al documento de cotización (Google Drive, Dropbox, etc.)
+                    </p>
+                  )}
                 </div>
 
                 <div className="md:col-span-2">

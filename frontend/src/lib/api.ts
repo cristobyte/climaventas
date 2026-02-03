@@ -329,6 +329,11 @@ export const referralsApi = {
     return response.data;
   },
 
+  update: async (id: string, data: any) => {
+    const response = await api.patch(`/referrals/${id}`, data);
+    return response.data;
+  },
+
   convert: async (id: string, bonusAmount?: number) => {
     const response = await api.patch(`/referrals/${id}/convert`, { bonusAmount });
     return response.data;

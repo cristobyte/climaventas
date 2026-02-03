@@ -70,7 +70,7 @@ export class LeadsController {
   @ApiOperation({ summary: 'Crear un nuevo lead' })
   @ApiResponse({ status: 201, description: 'Lead creado' })
   create(@Body() createLeadDto: CreateLeadDto, @CurrentUser() user: any) {
-    return this.leadsService.create(createLeadDto, user.id);
+    return this.leadsService.create(createLeadDto, user.userId);
   }
 
   @Patch(':id')

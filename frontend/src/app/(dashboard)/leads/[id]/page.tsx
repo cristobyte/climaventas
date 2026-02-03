@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Header } from '@/components/layout';
@@ -12,7 +12,7 @@ import {
   leadStatusLabels,
   leadStatusColors,
 } from '@/lib/utils';
-import { ArrowLeft, Pencil, Check, X, Trash2, ShoppingCart, Search } from 'lucide-react';
+import { ArrowLeft, Pencil, Check, X, Trash2, ShoppingCart, Search, ChevronDown } from 'lucide-react';
 import Link from 'next/link';
 import { useAuth } from '@/lib/auth-context';
 
@@ -35,6 +35,8 @@ export default function LeadDetailPage() {
   const [isEditing, setIsEditing] = useState(false);
   const [error, setError] = useState('');
   const [customerSearch, setCustomerSearch] = useState('');
+  const [showCustomerDropdown, setShowCustomerDropdown] = useState(false);
+  const customerDropdownRef = useRef<HTMLDivElement>(null);
 
   const { data: lead, isLoading } = useQuery({
     queryKey: ['leads', params.id],
@@ -57,10 +59,27 @@ export default function LeadDetailPage() {
     notes: '',
   });
 
-  const filteredCustomers = customers?.filter((customer: any) =>
-    customer.name.toLowerCase().includes(customerSearch.toLowerCase()) ||
-    customer.email?.toLowerCase().includes(customerSearch.toLowerCase())
-  ) || [];
+  const filteredCustomers = customers?.filter((customer: any) => {
+    if (!customerSearch) return true;
+    const searchLower = customerSearch.toLowerCase();
+    return (
+      customer.name?.toLowerCase().includes(searchLower) ||
+      customer.email?.toLowerCase().includes(searchLower) ||
+      customer.phone?.includes(customerSearch)
+    );
+  }) || [];
+
+  const selectedCustomer = customers?.find((c: any) => c.id === formData.customerId);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (customerDropdownRef.current && !customerDropdownRef.current.contains(event.target as Node)) {
+        setShowCustomerDropdown(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   const updateMutation = useMutation({
     mutationFn: (data: any) => leadsApi.update(params.id as string, data),
@@ -89,6 +108,7 @@ export default function LeadDetailPage() {
     mutationFn: () => leadsApi.markAsWon(params.id as string),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['leads'] });
+      queryClient.invalidateQueries({ queryKey: ['leads', params.id] });
     },
   });
 
@@ -96,6 +116,7 @@ export default function LeadDetailPage() {
     mutationFn: () => leadsApi.markAsLost(params.id as string),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['leads'] });
+      queryClient.invalidateQueries({ queryKey: ['leads', params.id] });
     },
   });
 
@@ -206,34 +227,63 @@ export default function LeadDetailPage() {
 
         {isEditing ? (
           <form onSubmit={handleSubmit} className="card p-6 space-y-6">
-            {/* Customer Selection */}
+            {/* Customer Selection - Same as sales */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Cliente *
               </label>
-              <div className="relative mb-2">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-                <input
-                  type="text"
-                  placeholder="Buscar cliente..."
-                  value={customerSearch}
-                  onChange={(e) => setCustomerSearch(e.target.value)}
-                  className="input pl-10 w-full"
-                />
+              <div className="relative" ref={customerDropdownRef}>
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                  <input
+                    type="text"
+                    placeholder={selectedCustomer ? selectedCustomer.name : "Buscar cliente..."}
+                    value={customerSearch}
+                    onChange={(e) => {
+                      setCustomerSearch(e.target.value);
+                      setShowCustomerDropdown(true);
+                    }}
+                    onFocus={() => setShowCustomerDropdown(true)}
+                    className={`input pl-10 pr-10 w-full ${selectedCustomer && !customerSearch ? 'text-gray-900' : ''}`}
+                  />
+                  <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                </div>
+                {showCustomerDropdown && (
+                  <div className="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-auto">
+                    {filteredCustomers?.length > 0 ? (
+                      filteredCustomers.map((customer: any) => (
+                        <button
+                          key={customer.id}
+                          type="button"
+                          onClick={() => {
+                            setFormData({ ...formData, customerId: customer.id });
+                            setCustomerSearch('');
+                            setShowCustomerDropdown(false);
+                          }}
+                          className={`w-full px-4 py-2 text-left hover:bg-gray-100 ${
+                            formData.customerId === customer.id ? 'bg-primary-50 text-primary' : ''
+                          }`}
+                        >
+                          <p className="font-medium">{customer.name}</p>
+                          <p className="text-sm text-gray-500">
+                            {customer.email || customer.phone || 'Sin contacto'}
+                          </p>
+                        </button>
+                      ))
+                    ) : (
+                      <div className="px-4 py-3 text-sm text-gray-500">
+                        No se encontraron clientes
+                      </div>
+                    )}
+                  </div>
+                )}
+                {selectedCustomer && !showCustomerDropdown && (
+                  <p className="text-sm text-gray-500 mt-1">
+                    Seleccionado: {selectedCustomer.name}
+                    {selectedCustomer.email && ` - ${selectedCustomer.email}`}
+                  </p>
+                )}
               </div>
-              <select
-                value={formData.customerId}
-                onChange={(e) => setFormData({ ...formData, customerId: e.target.value })}
-                className="input w-full"
-                required
-              >
-                <option value="">Seleccionar cliente</option>
-                {filteredCustomers.map((customer: any) => (
-                  <option key={customer.id} value={customer.id}>
-                    {customer.name} - {customer.email}
-                  </option>
-                ))}
-              </select>
             </div>
 
             {/* Title */}

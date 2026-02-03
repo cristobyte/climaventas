@@ -149,29 +149,38 @@ export default function ReferralDetailPage() {
                   </span>
                 </div>
 
-                {canManage && referral.status === 'PENDING' && (
-                  <div className="flex gap-2">
-                    <button
-                      onClick={() => {
-                        setBonusAmount(referral.bonusAmount?.toString() || '');
-                        setShowConvertModal(true);
-                      }}
-                      disabled={convertMutation.isPending}
-                      className="btn-primary"
-                    >
-                      <Check className="h-4 w-4 mr-2" />
-                      Convertir
-                    </button>
-                    <button
-                      onClick={handleExpire}
-                      disabled={expireMutation.isPending}
-                      className="btn-outline"
-                    >
-                      <X className="h-4 w-4 mr-2" />
-                      Expirar
-                    </button>
-                  </div>
-                )}
+                <div className="flex gap-2">
+                  {canManage && referral.status === 'PENDING' && (
+                    <>
+                      <Link
+                        href={`/referrals/${referralId}/edit`}
+                        className="btn-outline"
+                      >
+                        <Edit2 className="h-4 w-4 mr-2" />
+                        Editar
+                      </Link>
+                      <button
+                        onClick={() => {
+                          setBonusAmount(referral.bonusAmount?.toString() || '');
+                          setShowConvertModal(true);
+                        }}
+                        disabled={convertMutation.isPending}
+                        className="btn-primary"
+                      >
+                        <Check className="h-4 w-4 mr-2" />
+                        Convertir
+                      </button>
+                      <button
+                        onClick={handleExpire}
+                        disabled={expireMutation.isPending}
+                        className="btn-outline"
+                      >
+                        <X className="h-4 w-4 mr-2" />
+                        Expirar
+                      </button>
+                    </>
+                  )}
+                </div>
               </div>
             </div>
           </div>
