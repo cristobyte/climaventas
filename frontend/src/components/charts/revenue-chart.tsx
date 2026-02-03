@@ -10,6 +10,7 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 import { formatCurrency } from '@/lib/utils';
+import { useTheme } from '@/lib/theme-context';
 
 interface RevenueData {
   month: string;
@@ -23,6 +24,8 @@ interface RevenueChartProps {
 }
 
 export function RevenueChart({ data, forecast }: RevenueChartProps) {
+  const { theme } = useTheme();
+  const isDark = theme === 'dark';
   // Combine historical and forecast data
   const combinedData = [
     ...data.map((d) => ({
@@ -56,19 +59,19 @@ export function RevenueChart({ data, forecast }: RevenueChartProps) {
             <stop offset="95%" stopColor="#34d399" stopOpacity={0} />
           </linearGradient>
         </defs>
-        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e5e7eb" />
+        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={isDark ? '#374151' : '#e5e7eb'} />
         <XAxis
           dataKey="month"
           tickFormatter={formatMonth}
           axisLine={false}
           tickLine={false}
-          tick={{ fill: '#6b7280', fontSize: 12 }}
+          tick={{ fill: isDark ? '#9ca3af' : '#6b7280', fontSize: 12 }}
         />
         <YAxis
           tickFormatter={(value) => `$${(value / 1000000).toFixed(1)}M`}
           axisLine={false}
           tickLine={false}
-          tick={{ fill: '#6b7280', fontSize: 12 }}
+          tick={{ fill: isDark ? '#9ca3af' : '#6b7280', fontSize: 12 }}
         />
         <Tooltip
           formatter={(value: number, name: string) => [
@@ -77,10 +80,11 @@ export function RevenueChart({ data, forecast }: RevenueChartProps) {
           ]}
           labelFormatter={formatMonth}
           contentStyle={{
-            backgroundColor: 'white',
-            border: '1px solid #e5e7eb',
+            backgroundColor: isDark ? '#1f2937' : 'white',
+            border: `1px solid ${isDark ? '#374151' : '#e5e7eb'}`,
             borderRadius: '8px',
             boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)',
+            color: isDark ? '#f3f4f6' : '#111827',
           }}
         />
         <Area

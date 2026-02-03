@@ -33,14 +33,14 @@ export function FunnelChart({ data }: FunnelChartProps) {
         return (
           <div key={item.stage} className="relative">
             <div className="flex items-center justify-between mb-1">
-              <span className="text-sm font-medium text-gray-700">
+              <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
                 {stageLabels[item.stage] || item.stage}
               </span>
-              <span className="text-sm text-gray-500">
+              <span className="text-sm text-gray-500 dark:text-gray-400">
                 {item.count} ({item.percentage.toFixed(1)}%)
               </span>
             </div>
-            <div className="relative h-8 bg-gray-100 rounded overflow-hidden">
+            <div className="relative h-8 bg-gray-100 dark:bg-gray-700 rounded overflow-hidden">
               <div
                 className="absolute inset-y-0 left-0 rounded transition-all duration-500"
                 style={{
@@ -52,7 +52,7 @@ export function FunnelChart({ data }: FunnelChartProps) {
             {index < data.length - 1 && (
               <div className="flex justify-center my-1">
                 <svg
-                  className="w-4 h-4 text-gray-300"
+                  className="w-4 h-4 text-gray-300 dark:text-gray-600"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"

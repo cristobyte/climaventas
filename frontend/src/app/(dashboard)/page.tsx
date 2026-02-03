@@ -52,10 +52,10 @@ export default function DashboardPage() {
         <Header title="Dashboard" subtitle="Bienvenido a ClimaVentas" />
         <div className="p-6">
           <div className="card p-8 text-center">
-            <h2 className="text-xl font-semibold text-gray-900 mb-2">
+            <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
               Bienvenido a ClimaVentas
             </h2>
-            <p className="text-gray-500 mb-4">
+            <p className="text-gray-500 dark:text-gray-400 mb-4">
               Usa la navegación lateral para acceder a tus clientes y ventas.
             </p>
             <div className="flex justify-center gap-4">
@@ -128,7 +128,7 @@ export default function DashboardPage() {
           {/* Revenue Chart */}
           <div className="card">
             <div className="card-header">
-              <h2 className="text-lg font-semibold text-gray-900">
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
                 Ingresos Mensuales
               </h2>
               {forecast?.growthRate && (
@@ -140,7 +140,7 @@ export default function DashboardPage() {
                   )}
                   <span
                     className={`text-sm font-medium ${
-                      forecast.growthRate >= 0 ? 'text-green-600' : 'text-red-600'
+                      forecast.growthRate >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'
                     }`}
                   >
                     {forecast.growthRate.toFixed(1)}% crecimiento
@@ -159,10 +159,10 @@ export default function DashboardPage() {
           {/* Sales Funnel */}
           <div className="card">
             <div className="card-header">
-              <h2 className="text-lg font-semibold text-gray-900">
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
                 Embudo de Ventas
               </h2>
-              <p className="text-sm text-gray-500 mt-1">
+              <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
                 {funnel?.total || 0} clientes totales
               </p>
             </div>
@@ -177,7 +177,7 @@ export default function DashboardPage() {
           {/* Top Products */}
           <div className="card">
             <div className="card-header">
-              <h2 className="text-lg font-semibold text-gray-900">
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
                 Top Productos
               </h2>
             </div>
@@ -189,7 +189,7 @@ export default function DashboardPage() {
           {/* Top Agents */}
           <div className="card">
             <div className="card-header">
-              <h2 className="text-lg font-semibold text-gray-900">
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
                 Top Agentes
               </h2>
             </div>
@@ -201,30 +201,30 @@ export default function DashboardPage() {
           {/* Recent Sales */}
           <div className="card">
             <div className="card-header flex items-center justify-between">
-              <h2 className="text-lg font-semibold text-gray-900">
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
                 Ventas Recientes
               </h2>
               <Link
                 href="/sales"
-                className="text-sm text-primary hover:underline"
+                className="text-sm text-primary dark:text-primary-300 hover:underline"
               >
                 Ver todas
               </Link>
             </div>
-            <div className="divide-y divide-gray-200">
+            <div className="divide-y divide-gray-200 dark:divide-gray-700">
               {dashboard?.recentSales?.slice(0, 5).map((sale: any) => (
                 <div key={sale.id} className="px-6 py-3">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm font-medium text-gray-900">
+                      <p className="text-sm font-medium text-gray-900 dark:text-white">
                         {sale.customer?.name}
                       </p>
-                      <p className="text-xs text-gray-500">
+                      <p className="text-xs text-gray-500 dark:text-gray-400">
                         {sale.product?.name}
                       </p>
                     </div>
                     <div className="text-right">
-                      <p className="text-sm font-medium text-gray-900">
+                      <p className="text-sm font-medium text-gray-900 dark:text-white">
                         {formatCurrency(sale.totalAmount)}
                       </p>
                       <Badge
@@ -243,7 +243,7 @@ export default function DashboardPage() {
                 </div>
               ))}
               {(!dashboard?.recentSales || dashboard.recentSales.length === 0) && (
-                <div className="px-6 py-8 text-center text-sm text-gray-500">
+                <div className="px-6 py-8 text-center text-sm text-gray-500 dark:text-gray-400">
                   No hay ventas recientes
                 </div>
               )}
@@ -254,7 +254,7 @@ export default function DashboardPage() {
         {/* Customers by Stage */}
         <div className="card">
           <div className="card-header">
-            <h2 className="text-lg font-semibold text-gray-900">
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
               Clientes por Etapa
             </h2>
           </div>
@@ -264,16 +264,16 @@ export default function DashboardPage() {
                 ([stage, count]) => (
                   <div
                     key={stage}
-                    className="p-4 rounded-lg bg-gray-50 text-center"
+                    className="p-4 rounded-lg bg-gray-50 dark:bg-gray-700/50 text-center"
                   >
                     <div
                       className={`inline-block px-2 py-1 rounded-full text-xs font-medium mb-2 ${
-                        stageColors[stage] || 'bg-gray-100 text-gray-700'
+                        stageColors[stage] || 'bg-gray-100 dark:bg-gray-600 text-gray-700 dark:text-gray-300'
                       }`}
                     >
                       {stageLabels[stage] || stage}
                     </div>
-                    <p className="text-2xl font-semibold text-gray-900">
+                    <p className="text-2xl font-semibold text-gray-900 dark:text-white">
                       {count as number}
                     </p>
                   </div>
