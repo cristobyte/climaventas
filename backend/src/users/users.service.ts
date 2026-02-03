@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
+import { Injectable, NotFoundException, ConflictException, BadRequestException } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { PrismaService } from '../database/prisma.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -139,12 +139,45 @@ export class UsersService {
   }
 
   async remove(id: string) {
-    await this.findOne(id);
-
-    // Soft delete by deactivating
-    return this.prisma.user.update({
+    const user = await this.prisma.user.findUnique({
       where: { id },
-      data: { isActive: false },
+      include: {
+        _count: {
+          select: {
+            sales: true,
+            leads: true,
+          },
+        },
+      },
+    });
+
+    if (!user) {
+      throw new NotFoundException('Usuario no encontrado');
+    }
+
+    // Only allow deletion if user is already deactivated
+    if (user.isActive) {
+      throw new BadRequestException('El usuario debe ser desactivado antes de eliminarlo');
+    }
+
+    // Check for related data that would cause foreign key issues
+    if (user._count.sales > 0 || user._count.leads > 0) {
+      throw new BadRequestException(
+        'No se puede eliminar el usuario porque tiene ventas o leads asociados. Solo se puede desactivar.',
+      );
+    }
+
+    // Delete related data first (refresh tokens, assigned customers)
+    await this.prisma.refreshToken.deleteMany({ where: { userId: id } });
+    await this.prisma.customer.updateMany({
+      where: { assignedAgentId: id },
+      data: { assignedAgentId: null },
+    });
+    await this.prisma.interaction.deleteMany({ where: { userId: id } });
+
+    // Now delete the user
+    return this.prisma.user.delete({
+      where: { id },
     });
   }
 

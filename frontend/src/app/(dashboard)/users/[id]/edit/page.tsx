@@ -7,7 +7,7 @@ import { Header } from '@/components/layout';
 import { LoadingPage } from '@/components/ui';
 import { usersApi } from '@/lib/api';
 import { roleLabels } from '@/lib/utils';
-import { ArrowLeft, Save, Trash2 } from 'lucide-react';
+import { ArrowLeft, Save, Trash2, UserX } from 'lucide-react';
 import Link from 'next/link';
 import { useAuth } from '@/lib/auth-context';
 
@@ -21,6 +21,7 @@ export default function EditUserPage() {
   const { hasRole, user: currentUser } = useAuth();
   const [error, setError] = useState('');
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [showDeactivateConfirm, setShowDeactivateConfirm] = useState(false);
 
   const [formData, setFormData] = useState({
     name: '',
@@ -64,6 +65,18 @@ export default function EditUserPage() {
     },
   });
 
+  const deactivateMutation = useMutation({
+    mutationFn: () => usersApi.update(userId, { isActive: false }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['users'] });
+      queryClient.invalidateQueries({ queryKey: ['user', userId] });
+      setShowDeactivateConfirm(false);
+    },
+    onError: (err: any) => {
+      setError(err.response?.data?.message || 'Error al desactivar el usuario');
+    },
+  });
+
   const deleteMutation = useMutation({
     mutationFn: () => usersApi.delete(userId),
     onSuccess: () => {
@@ -71,7 +84,8 @@ export default function EditUserPage() {
       router.push('/users');
     },
     onError: (err: any) => {
-      setError(err.response?.data?.message || 'Error al desactivar el usuario');
+      setError(err.response?.data?.message || 'Error al eliminar el usuario');
+      setShowDeleteConfirm(false);
     },
   });
 
@@ -150,6 +164,10 @@ export default function EditUserPage() {
       ? (e.target as HTMLInputElement).checked
       : e.target.value;
     setFormData({ ...formData, [e.target.name]: value });
+  };
+
+  const handleDeactivate = () => {
+    deactivateMutation.mutate();
   };
 
   const handleDelete = () => {
@@ -346,20 +364,37 @@ export default function EditUserPage() {
               </div>
 
               <div className="flex flex-col sm:flex-row justify-between gap-3 pt-4 border-t border-gray-200">
-                <button
-                  type="button"
-                  onClick={() => setShowDeleteConfirm(true)}
-                  className="btn-danger order-last sm:order-first"
-                  disabled={isCurrentUser}
-                  title={
-                    isCurrentUser
-                      ? 'No puedes desactivarte a ti mismo'
-                      : 'Desactivar usuario'
-                  }
-                >
-                  <Trash2 className="h-4 w-4 mr-2" />
-                  Desactivar
-                </button>
+                <div className="flex gap-2 order-last sm:order-first">
+                  {/* Show deactivate button if user is active */}
+                  {user.isActive && (
+                    <button
+                      type="button"
+                      onClick={() => setShowDeactivateConfirm(true)}
+                      className="btn-outline text-yellow-600 border-yellow-300 hover:bg-yellow-50"
+                      disabled={isCurrentUser}
+                      title={
+                        isCurrentUser
+                          ? 'No puedes desactivarte a ti mismo'
+                          : 'Desactivar usuario'
+                      }
+                    >
+                      <UserX className="h-4 w-4 mr-2" />
+                      Desactivar
+                    </button>
+                  )}
+                  {/* Show delete button only if user is already deactivated */}
+                  {!user.isActive && (
+                    <button
+                      type="button"
+                      onClick={() => setShowDeleteConfirm(true)}
+                      className="btn-danger"
+                      title="Eliminar usuario permanentemente"
+                    >
+                      <Trash2 className="h-4 w-4 mr-2" />
+                      Eliminar
+                    </button>
+                  )}
+                </div>
 
                 <div className="flex flex-col sm:flex-row gap-3">
                   <Link href="/users" className="btn-outline">
@@ -384,8 +419,8 @@ export default function EditUserPage() {
             </div>
           </form>
 
-          {/* Delete Confirmation Modal */}
-          {showDeleteConfirm && (
+          {/* Deactivate Confirmation Modal */}
+          {showDeactivateConfirm && (
             <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
               <div className="bg-white rounded-lg p-6 max-w-md w-full">
                 <h3 className="text-lg font-semibold text-gray-900 mb-2">
@@ -397,10 +432,44 @@ export default function EditUserPage() {
                 </p>
                 {hasRelatedData && (
                   <div className="bg-yellow-50 border border-yellow-200 text-yellow-800 p-3 rounded-lg text-sm mb-4">
-                    <strong>Advertencia:</strong> Este usuario tiene {user._count?.assignedCustomers || 0} clientes
+                    <strong>Nota:</strong> Este usuario tiene {user._count?.assignedCustomers || 0} clientes
                     y {user._count?.sales || 0} ventas asignadas. Los datos permanecerán en el sistema.
                   </div>
                 )}
+                <div className="flex justify-end gap-3">
+                  <button
+                    onClick={() => setShowDeactivateConfirm(false)}
+                    className="btn-outline"
+                  >
+                    Cancelar
+                  </button>
+                  <button
+                    onClick={handleDeactivate}
+                    disabled={deactivateMutation.isPending}
+                    className="btn-outline text-yellow-600 border-yellow-300 hover:bg-yellow-50"
+                  >
+                    {deactivateMutation.isPending ? 'Desactivando...' : 'Desactivar'}
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Delete Confirmation Modal */}
+          {showDeleteConfirm && (
+            <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+              <div className="bg-white rounded-lg p-6 max-w-md w-full">
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                  Confirmar eliminación permanente
+                </h3>
+                <p className="text-gray-600 mb-4">
+                  ¿Estás seguro de que deseas eliminar permanentemente al usuario "{user.name}"?
+                  <strong className="text-red-600"> Esta acción no se puede deshacer.</strong>
+                </p>
+                <div className="bg-red-50 border border-red-200 text-red-800 p-3 rounded-lg text-sm mb-4">
+                  <strong>Advertencia:</strong> Se eliminarán todos los datos del usuario incluyendo
+                  sus tokens de sesión e interacciones registradas.
+                </div>
                 <div className="flex justify-end gap-3">
                   <button
                     onClick={() => setShowDeleteConfirm(false)}
@@ -413,7 +482,7 @@ export default function EditUserPage() {
                     disabled={deleteMutation.isPending}
                     className="btn-danger"
                   >
-                    {deleteMutation.isPending ? 'Desactivando...' : 'Desactivar'}
+                    {deleteMutation.isPending ? 'Eliminando...' : 'Eliminar permanentemente'}
                   </button>
                 </div>
               </div>
