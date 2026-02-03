@@ -4,7 +4,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useParams, useRouter } from 'next/navigation';
 import { Header } from '@/components/layout';
 import { LoadingPage, Badge } from '@/components/ui';
-import { customersApi, interactionsApi } from '@/lib/api';
+import { customersApi, interactionsApi, leadsApi } from '@/lib/api';
 import {
   formatCurrency,
   formatDate,
@@ -15,6 +15,8 @@ import {
   statusLabels,
   statusColors,
   interactionTypeLabels,
+  leadStatusLabels,
+  leadStatusColors,
 } from '@/lib/utils';
 import {
   ArrowLeft,
@@ -29,6 +31,9 @@ import {
   FileText,
   PhoneCall,
   MessageCircle,
+  Trash2,
+  Target,
+  ChevronRight,
 } from 'lucide-react';
 import Link from 'next/link';
 import { useState } from 'react';
@@ -42,13 +47,21 @@ export default function CustomerDetailPage() {
   const queryClient = useQueryClient();
   const { hasRole } = useAuth();
   const canEdit = hasRole(['MANAGEMENT', 'AGENT']);
+  const canDelete = hasRole(['MANAGEMENT']);
 
   const [newStage, setNewStage] = useState('');
   const [showInteractionForm, setShowInteractionForm] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   const { data: customer, isLoading } = useQuery({
     queryKey: ['customer', params.id],
     queryFn: () => customersApi.getById(params.id as string),
+  });
+
+  const { data: leads } = useQuery({
+    queryKey: ['leads', { customerId: params.id }],
+    queryFn: () => leadsApi.getAll({ customerId: params.id as string }),
+    enabled: !!params.id,
   });
 
   const updateStageMutation = useMutation({
@@ -57,6 +70,14 @@ export default function CustomerDetailPage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['customer', params.id] });
       setNewStage('');
+    },
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: () => customersApi.delete(params.id as string),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['customers'] });
+      router.push('/customers');
     },
   });
 
@@ -115,15 +136,26 @@ export default function CustomerDetailPage() {
             <div className="card">
               <div className="card-header flex items-center justify-between">
                 <h2 className="text-lg font-semibold">Información del Cliente</h2>
-                {canEdit && (
-                  <Link
-                    href={`/customers/${customer.id}/edit`}
-                    className="btn-outline text-sm"
-                  >
-                    <Edit2 className="h-4 w-4 mr-1" />
-                    Editar
-                  </Link>
-                )}
+                <div className="flex gap-2">
+                  {canEdit && (
+                    <Link
+                      href={`/customers/${customer.id}/edit`}
+                      className="btn-outline text-sm"
+                    >
+                      <Edit2 className="h-4 w-4 mr-1" />
+                      Editar
+                    </Link>
+                  )}
+                  {canDelete && (
+                    <button
+                      onClick={() => setShowDeleteConfirm(true)}
+                      className="btn-danger text-sm"
+                    >
+                      <Trash2 className="h-4 w-4 mr-1" />
+                      Eliminar
+                    </button>
+                  )}
+                </div>
               </div>
               <div className="card-body">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -184,6 +216,60 @@ export default function CustomerDetailPage() {
               </div>
             </div>
 
+            {/* Leads */}
+            <div className="card">
+              <div className="card-header flex items-center justify-between">
+                <h2 className="text-lg font-semibold">
+                  Leads ({leads?.length || 0})
+                </h2>
+                {canEdit && (
+                  <Link
+                    href={`/leads/new?customerId=${customer.id}`}
+                    className="btn-primary text-sm"
+                  >
+                    <Target className="h-4 w-4 mr-1" />
+                    Nuevo Lead
+                  </Link>
+                )}
+              </div>
+              <div className="divide-y divide-gray-200">
+                {leads?.length > 0 ? (
+                  leads.map((lead: any) => (
+                    <Link
+                      key={lead.id}
+                      href={`/leads/${lead.id}`}
+                      className="block px-6 py-4 hover:bg-gray-50 transition-colors"
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className="flex-1">
+                          <p className="font-medium text-gray-900">
+                            {lead.title}
+                          </p>
+                          <p className="text-sm text-gray-500">
+                            {formatDate(lead.createdAt)} - {lead.closureChance}% prob.
+                          </p>
+                        </div>
+                        <div className="flex items-center gap-3">
+                          <span
+                            className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
+                              leadStatusColors[lead.status]
+                            }`}
+                          >
+                            {leadStatusLabels[lead.status]}
+                          </span>
+                          <ChevronRight className="h-4 w-4 text-gray-400" />
+                        </div>
+                      </div>
+                    </Link>
+                  ))
+                ) : (
+                  <div className="px-6 py-8 text-center text-gray-500">
+                    No hay leads registrados
+                  </div>
+                )}
+              </div>
+            </div>
+
             {/* Sales History */}
             <div className="card">
               <div className="card-header flex items-center justify-between">
@@ -203,7 +289,11 @@ export default function CustomerDetailPage() {
               <div className="divide-y divide-gray-200">
                 {customer.sales?.length > 0 ? (
                   customer.sales.map((sale: any) => (
-                    <div key={sale.id} className="px-6 py-4">
+                    <Link
+                      key={sale.id}
+                      href={`/sales/${sale.id}`}
+                      className="block px-6 py-4 hover:bg-gray-50 transition-colors"
+                    >
                       <div className="flex items-center justify-between">
                         <div>
                           <p className="font-medium text-gray-900">
@@ -213,20 +303,23 @@ export default function CustomerDetailPage() {
                             {formatDate(sale.saleDate)} - Cantidad: {sale.quantity}
                           </p>
                         </div>
-                        <div className="text-right">
-                          <p className="font-medium text-gray-900">
-                            {formatCurrency(sale.totalAmount)}
-                          </p>
-                          <span
-                            className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
-                              statusColors[sale.status]
-                            }`}
-                          >
-                            {statusLabels[sale.status]}
-                          </span>
+                        <div className="flex items-center gap-3">
+                          <div className="text-right">
+                            <p className="font-medium text-gray-900">
+                              {formatCurrency(sale.totalAmount)}
+                            </p>
+                            <span
+                              className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
+                                statusColors[sale.status]
+                              }`}
+                            >
+                              {statusLabels[sale.status]}
+                            </span>
+                          </div>
+                          <ChevronRight className="h-4 w-4 text-gray-400" />
                         </div>
                       </div>
-                    </div>
+                    </Link>
                   ))
                 ) : (
                   <div className="px-6 py-8 text-center text-gray-500">
@@ -373,6 +466,47 @@ export default function CustomerDetailPage() {
             </div>
           </div>
         </div>
+
+        {/* Delete Confirmation Modal */}
+        {showDeleteConfirm && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-lg p-6 max-w-md w-full">
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                Confirmar eliminación
+              </h3>
+              <p className="text-gray-600 mb-4">
+                ¿Estás seguro de que deseas eliminar al cliente "{customer.name}"?
+                Esta acción no se puede deshacer.
+              </p>
+              {(customer._count?.sales > 0) && (
+                <div className="bg-yellow-50 border border-yellow-200 text-yellow-800 p-3 rounded-lg text-sm mb-4">
+                  <strong>Advertencia:</strong> Este cliente tiene {customer._count.sales} ventas asociadas.
+                  No se puede eliminar un cliente con ventas.
+                </div>
+              )}
+              <div className="flex justify-end gap-3">
+                <button
+                  onClick={() => setShowDeleteConfirm(false)}
+                  className="btn-outline"
+                >
+                  Cancelar
+                </button>
+                <button
+                  onClick={() => deleteMutation.mutate()}
+                  disabled={deleteMutation.isPending || customer._count?.sales > 0}
+                  className="btn-danger"
+                >
+                  {deleteMutation.isPending ? 'Eliminando...' : 'Eliminar'}
+                </button>
+              </div>
+              {deleteMutation.isError && (
+                <p className="text-red-600 text-sm mt-3">
+                  {(deleteMutation.error as any)?.response?.data?.message || 'Error al eliminar el cliente'}
+                </p>
+              )}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
