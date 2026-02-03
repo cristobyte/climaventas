@@ -78,6 +78,21 @@ export class UsersService {
     });
   }
 
+  async findActiveAgents() {
+    return this.prisma.user.findMany({
+      where: {
+        isActive: true,
+      },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        role: true,
+      },
+      orderBy: { name: 'asc' },
+    });
+  }
+
   async create(createUserDto: CreateUserDto) {
     const existingUser = await this.findByEmail(createUserDto.email);
     if (existingUser) {

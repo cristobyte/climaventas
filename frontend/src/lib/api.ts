@@ -90,6 +90,11 @@ export const usersApi = {
     return response.data;
   },
 
+  getActiveAgents: async () => {
+    const response = await api.get('/users/agents');
+    return response.data;
+  },
+
   getById: async (id: string) => {
     const response = await api.get(`/users/${id}`);
     return response.data;

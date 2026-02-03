@@ -7,7 +7,7 @@ import { Header } from '@/components/layout';
 import { LoadingPage } from '@/components/ui';
 import { customersApi, usersApi } from '@/lib/api';
 import { stageLabels, sourceLabels } from '@/lib/utils';
-import { ArrowLeft, Save, Trash2 } from 'lucide-react';
+import { ArrowLeft, Save, Trash2, UserPlus } from 'lucide-react';
 import Link from 'next/link';
 import { useAuth } from '@/lib/auth-context';
 
@@ -18,7 +18,7 @@ export default function EditCustomerPage() {
   const router = useRouter();
   const params = useParams();
   const queryClient = useQueryClient();
-  const { hasRole } = useAuth();
+  const { hasRole, user: currentUser } = useAuth();
   const canDelete = hasRole(['MANAGEMENT']);
   const [error, setError] = useState('');
 
@@ -40,9 +40,9 @@ export default function EditCustomerPage() {
     queryFn: () => customersApi.getById(params.id as string),
   });
 
-  const { data: users } = useQuery({
-    queryKey: ['users', { role: 'AGENT' }],
-    queryFn: () => usersApi.getAll({ role: 'AGENT' }),
+  const { data: agents } = useQuery({
+    queryKey: ['agents'],
+    queryFn: () => usersApi.getActiveAgents(),
   });
 
   useEffect(() => {
@@ -282,20 +282,38 @@ export default function EditCustomerPage() {
                   <label htmlFor="assignedAgentId" className="label">
                     Agente Asignado
                   </label>
-                  <select
-                    id="assignedAgentId"
-                    name="assignedAgentId"
-                    value={formData.assignedAgentId}
-                    onChange={handleChange}
-                    className="input"
-                  >
-                    <option value="">Sin asignar</option>
-                    {users?.map((user: any) => (
-                      <option key={user.id} value={user.id}>
-                        {user.name}
-                      </option>
-                    ))}
-                  </select>
+                  <div className="flex gap-2">
+                    <select
+                      id="assignedAgentId"
+                      name="assignedAgentId"
+                      value={formData.assignedAgentId}
+                      onChange={handleChange}
+                      className="input flex-1"
+                    >
+                      <option value="">Sin asignar</option>
+                      {agents?.map((agent: any) => (
+                        <option key={agent.id} value={agent.id}>
+                          {agent.name} ({agent.role})
+                        </option>
+                      ))}
+                    </select>
+                    {currentUser && formData.assignedAgentId !== currentUser.id && (
+                      <button
+                        type="button"
+                        onClick={() => setFormData({ ...formData, assignedAgentId: currentUser.id })}
+                        className="btn-outline whitespace-nowrap"
+                        title="Asignarme a mí"
+                      >
+                        <UserPlus className="h-4 w-4 mr-1" />
+                        Asignarme
+                      </button>
+                    )}
+                  </div>
+                  {formData.assignedAgentId === currentUser?.id && (
+                    <p className="text-xs text-green-600 mt-1">
+                      Te has asignado como agente de este cliente
+                    </p>
+                  )}
                 </div>
 
                 <div className="md:col-span-2">

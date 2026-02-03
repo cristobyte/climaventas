@@ -1,19 +1,21 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { Header } from '@/components/layout';
 import { customersApi, usersApi } from '@/lib/api';
 import { stageLabels, sourceLabels } from '@/lib/utils';
-import { ArrowLeft, Save } from 'lucide-react';
+import { ArrowLeft, Save, UserPlus } from 'lucide-react';
 import Link from 'next/link';
+import { useAuth } from '@/lib/auth-context';
 
 const stages = ['PROSPECTING', 'PRE_SALES', 'SALES', 'POST_PURCHASE', 'SERVICE', 'FIDELITY'];
 const sources = ['REFERRAL', 'WEBSITE', 'PARTNERSHIP', 'DIRECT', 'OTHER'];
 
 export default function NewCustomerPage() {
   const router = useRouter();
+  const { user: currentUser } = useAuth();
   const [error, setError] = useState('');
 
   const [formData, setFormData] = useState({
@@ -29,9 +31,16 @@ export default function NewCustomerPage() {
     notes: '',
   });
 
-  const { data: users } = useQuery({
-    queryKey: ['users', { role: 'AGENT' }],
-    queryFn: () => usersApi.getAll({ role: 'AGENT' }),
+  // Auto-assign current user as agent if they are an AGENT role
+  useEffect(() => {
+    if (currentUser?.role === 'AGENT' && !formData.assignedAgentId) {
+      setFormData(prev => ({ ...prev, assignedAgentId: currentUser.id }));
+    }
+  }, [currentUser]);
+
+  const { data: agents } = useQuery({
+    queryKey: ['agents'],
+    queryFn: () => usersApi.getActiveAgents(),
   });
 
   const createMutation = useMutation({
@@ -213,20 +222,38 @@ export default function NewCustomerPage() {
                   <label htmlFor="assignedAgentId" className="label">
                     Agente Asignado
                   </label>
-                  <select
-                    id="assignedAgentId"
-                    name="assignedAgentId"
-                    value={formData.assignedAgentId}
-                    onChange={handleChange}
-                    className="input"
-                  >
-                    <option value="">Sin asignar</option>
-                    {users?.map((user: any) => (
-                      <option key={user.id} value={user.id}>
-                        {user.name}
-                      </option>
-                    ))}
-                  </select>
+                  <div className="flex gap-2">
+                    <select
+                      id="assignedAgentId"
+                      name="assignedAgentId"
+                      value={formData.assignedAgentId}
+                      onChange={handleChange}
+                      className="input flex-1"
+                    >
+                      <option value="">Sin asignar</option>
+                      {agents?.map((agent: any) => (
+                        <option key={agent.id} value={agent.id}>
+                          {agent.name} ({agent.role})
+                        </option>
+                      ))}
+                    </select>
+                    {currentUser && formData.assignedAgentId !== currentUser.id && (
+                      <button
+                        type="button"
+                        onClick={() => setFormData({ ...formData, assignedAgentId: currentUser.id })}
+                        className="btn-outline whitespace-nowrap"
+                        title="Asignarme a mí"
+                      >
+                        <UserPlus className="h-4 w-4 mr-1" />
+                        Asignarme
+                      </button>
+                    )}
+                  </div>
+                  {formData.assignedAgentId === currentUser?.id && (
+                    <p className="text-xs text-green-600 mt-1">
+                      Te has asignado como agente de este cliente
+                    </p>
+                  )}
                 </div>
 
                 <div className="md:col-span-2">

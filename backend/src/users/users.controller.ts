@@ -35,6 +35,13 @@ export class UsersController {
     return this.usersService.findAll({ role, isActive });
   }
 
+  @Get('agents')
+  @ApiOperation({ summary: 'Listar agentes activos (para asignación)' })
+  @ApiResponse({ status: 200, description: 'Lista de agentes activos' })
+  findActiveAgents() {
+    return this.usersService.findActiveAgents();
+  }
+
   @Get(':id')
   @Roles(Role.MANAGEMENT, Role.ANALYTICS)
   @ApiOperation({ summary: 'Obtener un usuario por ID' })
