@@ -119,15 +119,15 @@ export default function CustomersPage() {
                 <Link
                   key={customer.id}
                   href={`/customers/${customer.id}`}
-                  className="block bg-white rounded-lg shadow-sm border border-gray-200 p-4 hover:shadow-md transition-shadow"
+                  className="block bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 hover:shadow-md transition-shadow"
                 >
                   <div className="flex items-start justify-between">
                     <div className="flex-1 min-w-0">
-                      <p className="font-medium text-gray-900 truncate">
+                      <p className="font-medium text-gray-900 dark:text-white truncate">
                         {customer.name}
                       </p>
                       {customer.city && (
-                        <p className="text-sm text-gray-500">
+                        <p className="text-sm text-gray-500 dark:text-gray-400">
                           {customer.city}, {customer.region}
                         </p>
                       )}
@@ -142,7 +142,7 @@ export default function CustomersPage() {
                   </div>
 
                   <div className="mt-3 flex items-center justify-between text-sm">
-                    <div className="text-gray-500">
+                    <div className="text-gray-500 dark:text-gray-400">
                       {customer.email || customer.phone || '-'}
                     </div>
                     <div className="flex items-center text-gray-400">
@@ -175,16 +175,16 @@ export default function CustomersPage() {
                       <th></th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-gray-200">
+                  <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
                     {customers.map((customer: any) => (
                       <tr key={customer.id}>
                         <td>
                           <div>
-                            <p className="font-medium text-gray-900">
+                            <p className="font-medium text-gray-900 dark:text-white">
                               {customer.name}
                             </p>
                             {customer.city && (
-                              <p className="text-sm text-gray-500">
+                              <p className="text-sm text-gray-500 dark:text-gray-400">
                                 {customer.city}, {customer.region}
                               </p>
                             )}
@@ -192,8 +192,8 @@ export default function CustomersPage() {
                         </td>
                         <td>
                           <div className="text-sm">
-                            <p>{customer.email || '-'}</p>
-                            <p className="text-gray-500">{customer.phone || '-'}</p>
+                            <p className="dark:text-gray-300">{customer.email || '-'}</p>
+                            <p className="text-gray-500 dark:text-gray-400">{customer.phone || '-'}</p>
                           </div>
                         </td>
                         <td>
@@ -206,29 +206,29 @@ export default function CustomersPage() {
                           </span>
                         </td>
                         <td>
-                          <span className="text-sm text-gray-600">
+                          <span className="text-sm text-gray-600 dark:text-gray-400">
                             {sourceLabels[customer.source]}
                           </span>
                         </td>
                         <td>
-                          <span className="text-sm text-gray-600">
+                          <span className="text-sm text-gray-600 dark:text-gray-400">
                             {customer.assignedAgent?.name || '-'}
                           </span>
                         </td>
                         <td>
-                          <span className="text-sm text-gray-900">
+                          <span className="text-sm text-gray-900 dark:text-white">
                             {customer._count?.sales || 0}
                           </span>
                         </td>
                         <td>
-                          <span className="text-sm text-gray-500">
+                          <span className="text-sm text-gray-500 dark:text-gray-400">
                             {formatDate(customer.createdAt)}
                           </span>
                         </td>
                         <td>
                           <Link
                             href={`/customers/${customer.id}`}
-                            className="text-primary hover:underline text-sm"
+                            className="text-primary dark:text-primary-300 hover:underline text-sm"
                           >
                             Ver
                           </Link>
