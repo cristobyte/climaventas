@@ -25,10 +25,10 @@ function ProtectedLayoutContent({ children, requiredRoles }: ProtectedLayoutProp
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
         <div className="flex flex-col items-center gap-4">
           <div className="h-12 w-12 border-4 border-primary border-t-transparent rounded-full animate-spin" />
-          <p className="text-gray-500">Cargando...</p>
+          <p className="text-gray-500 dark:text-gray-400">Cargando...</p>
         </div>
       </div>
     );
@@ -41,10 +41,10 @@ function ProtectedLayoutContent({ children, requiredRoles }: ProtectedLayoutProp
   // Check role access
   if (requiredRoles && !hasRole(requiredRoles)) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">Acceso denegado</h1>
-          <p className="text-gray-500 mb-4">No tienes permisos para ver esta página.</p>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Acceso denegado</h1>
+          <p className="text-gray-500 dark:text-gray-400 mb-4">No tienes permisos para ver esta página.</p>
           <button
             onClick={() => router.push('/')}
             className="btn-primary"
@@ -57,7 +57,7 @@ function ProtectedLayoutContent({ children, requiredRoles }: ProtectedLayoutProp
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <Sidebar />
       <main
         className={cn(

@@ -132,7 +132,7 @@ export function Sidebar() {
         onMouseEnter={() => !isMobile && setIsHovering(true)}
         onMouseLeave={() => !isMobile && setIsHovering(false)}
         className={cn(
-          'fixed left-0 top-0 z-50 h-screen bg-white border-r border-gray-200 flex flex-col transition-all duration-300 ease-in-out',
+          'fixed left-0 top-0 z-50 h-screen bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 flex flex-col transition-all duration-300 ease-in-out',
           // Width
           showExpanded ? 'w-64' : 'w-16',
           // Mobile positioning
@@ -141,7 +141,7 @@ export function Sidebar() {
         )}
       >
         {/* Logo */}
-        <div className="h-16 flex items-center justify-between px-4 border-b border-gray-200">
+        <div className="h-16 flex items-center justify-between px-4 border-b border-gray-200 dark:border-gray-700">
           {showExpanded ? (
             <Image
               src="https://climatecnologia.cl/wp-content/uploads/2025/11/cropped-logo-clima-horizontal.png"
@@ -163,7 +163,7 @@ export function Sidebar() {
           {isMobile && isOpen && (
             <button
               onClick={close}
-              className="p-1 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+              className="p-1 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
               aria-label="Cerrar menú"
             >
               <X className="h-5 w-5" />
@@ -196,8 +196,8 @@ export function Sidebar() {
                           'flex items-center w-full px-3 py-2 rounded-lg text-sm font-medium transition-colors',
                           showExpanded ? 'justify-between' : 'justify-center',
                           isActive
-                            ? 'bg-primary-50 text-primary'
-                            : 'text-gray-700 hover:bg-gray-100'
+                            ? 'bg-primary-50 dark:bg-primary-900/30 text-primary dark:text-primary-300'
+                            : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
                         )}
                         title={!showExpanded ? item.label : undefined}
                       >
@@ -224,8 +224,8 @@ export function Sidebar() {
                                 className={cn(
                                   'block px-3 py-2 rounded-lg text-sm transition-colors',
                                   pathname === child.href
-                                    ? 'bg-primary-50 text-primary font-medium'
-                                    : 'text-gray-600 hover:bg-gray-100'
+                                    ? 'bg-primary-50 dark:bg-primary-900/30 text-primary dark:text-primary-300 font-medium'
+                                    : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700'
                                 )}
                               >
                                 {child.label}
@@ -243,8 +243,8 @@ export function Sidebar() {
                         'flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-colors',
                         showExpanded ? 'gap-3' : 'justify-center',
                         isActive
-                          ? 'bg-primary-50 text-primary'
-                          : 'text-gray-700 hover:bg-gray-100'
+                          ? 'bg-primary-50 dark:bg-primary-900/30 text-primary dark:text-primary-300'
+                          : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
                       )}
                       title={!showExpanded ? item.label : undefined}
                     >
@@ -259,25 +259,25 @@ export function Sidebar() {
         </nav>
 
         {/* User Info & Logout */}
-        <div className="border-t border-gray-200 p-3">
+        <div className="border-t border-gray-200 dark:border-gray-700 p-3">
           {showExpanded ? (
             <>
               <div className="flex items-center gap-3 mb-3">
-                <div className="h-10 w-10 rounded-full bg-primary-100 flex items-center justify-center flex-shrink-0">
-                  <span className="text-primary font-medium">
+                <div className="h-10 w-10 rounded-full bg-primary-100 dark:bg-primary-900/30 flex items-center justify-center flex-shrink-0">
+                  <span className="text-primary dark:text-primary-300 font-medium">
                     {user?.name?.charAt(0).toUpperCase()}
                   </span>
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-gray-900 truncate">
+                  <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
                     {user?.name}
                   </p>
-                  <p className="text-xs text-gray-500 truncate">{user?.email}</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{user?.email}</p>
                 </div>
               </div>
               <button
                 onClick={logout}
-                className="flex items-center gap-2 w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+                className="flex items-center gap-2 w-full px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
               >
                 <LogOut className="h-4 w-4" />
                 Cerrar sesión
@@ -285,14 +285,14 @@ export function Sidebar() {
             </>
           ) : (
             <div className="flex flex-col items-center gap-2">
-              <div className="h-10 w-10 rounded-full bg-primary-100 flex items-center justify-center">
-                <span className="text-primary font-medium">
+              <div className="h-10 w-10 rounded-full bg-primary-100 dark:bg-primary-900/30 flex items-center justify-center">
+                <span className="text-primary dark:text-primary-300 font-medium">
                   {user?.name?.charAt(0).toUpperCase()}
                 </span>
               </div>
               <button
                 onClick={logout}
-                className="p-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+                className="p-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
                 title="Cerrar sesión"
               >
                 <LogOut className="h-4 w-4" />
@@ -303,10 +303,10 @@ export function Sidebar() {
 
         {/* Desktop collapse toggle */}
         {!isMobile && (
-          <div className="border-t border-gray-200 p-2">
+          <div className="border-t border-gray-200 dark:border-gray-700 p-2">
             <button
               onClick={toggleCollapse}
-              className="flex items-center justify-center w-full p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+              className="flex items-center justify-center w-full p-2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
               aria-label={isCollapsed ? 'Expandir menú' : 'Colapsar menú'}
             >
               {isCollapsed ? (
