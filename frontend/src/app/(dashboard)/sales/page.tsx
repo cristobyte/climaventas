@@ -67,16 +67,16 @@ export default function SalesPage() {
         {/* Summary Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 md:gap-4 mb-6">
           <div className="card p-4">
-            <p className="text-sm text-gray-500">Total Ventas</p>
-            <p className="text-xl md:text-2xl font-semibold">{sales?.length || 0}</p>
+            <p className="text-sm text-gray-500 dark:text-gray-400">Total Ventas</p>
+            <p className="text-xl md:text-2xl font-semibold dark:text-white">{sales?.length || 0}</p>
           </div>
           <div className="card p-4">
-            <p className="text-sm text-gray-500">Ingresos Completados</p>
-            <p className="text-xl md:text-2xl font-semibold">{formatCurrency(totalRevenue)}</p>
+            <p className="text-sm text-gray-500 dark:text-gray-400">Ingresos Completados</p>
+            <p className="text-xl md:text-2xl font-semibold dark:text-white">{formatCurrency(totalRevenue)}</p>
           </div>
           <div className="card p-4">
-            <p className="text-sm text-gray-500">Pendientes de Aprobar</p>
-            <p className="text-xl md:text-2xl font-semibold">{pendingCount}</p>
+            <p className="text-sm text-gray-500 dark:text-gray-400">Pendientes de Aprobar</p>
+            <p className="text-xl md:text-2xl font-semibold dark:text-white">{pendingCount}</p>
           </div>
         </div>
 
@@ -112,17 +112,17 @@ export default function SalesPage() {
               {sales.map((sale: any) => (
                 <div
                   key={sale.id}
-                  className="bg-white rounded-lg shadow-sm border border-gray-200 p-4"
+                  className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4"
                 >
                   <div className="flex items-start justify-between mb-3">
                     <div className="flex-1 min-w-0">
                       <Link
                         href={`/customers/${sale.customer?.id}`}
-                        className="font-medium text-gray-900 hover:text-primary block truncate"
+                        className="font-medium text-gray-900 dark:text-white hover:text-primary dark:hover:text-primary-300 block truncate"
                       >
                         {sale.customer?.name}
                       </Link>
-                      <p className="text-sm text-gray-500 truncate">
+                      <p className="text-sm text-gray-500 dark:text-gray-400 truncate">
                         {sale.product?.name}
                       </p>
                     </div>
@@ -136,13 +136,13 @@ export default function SalesPage() {
                   </div>
 
                   <div className="flex items-center justify-between text-sm mb-3">
-                    <span className="text-gray-500">{sale.agent?.name}</span>
-                    <span className="font-semibold text-gray-900">
+                    <span className="text-gray-500 dark:text-gray-400">{sale.agent?.name}</span>
+                    <span className="font-semibold text-gray-900 dark:text-white">
                       {formatCurrency(sale.totalAmount)}
                     </span>
                   </div>
 
-                  <div className="flex items-center justify-between pt-3 border-t border-gray-100">
+                  <div className="flex items-center justify-between pt-3 border-t border-gray-100 dark:border-gray-700">
                     <span className="text-xs text-gray-400">
                       {formatDate(sale.saleDate)}
                     </span>
@@ -207,31 +207,31 @@ export default function SalesPage() {
                       <th>Acciones</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-gray-200">
+                  <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
                     {sales.map((sale: any) => (
                       <tr key={sale.id}>
                         <td>
                           <Link
                             href={`/customers/${sale.customer?.id}`}
-                            className="font-medium text-gray-900 hover:text-primary"
+                            className="font-medium text-gray-900 dark:text-white hover:text-primary dark:hover:text-primary-300"
                           >
                             {sale.customer?.name}
                           </Link>
                         </td>
                         <td>
-                          <p className="text-sm">{sale.product?.name}</p>
-                          <p className="text-xs text-gray-500">
+                          <p className="text-sm dark:text-gray-300">{sale.product?.name}</p>
+                          <p className="text-xs text-gray-500 dark:text-gray-400">
                             {sale.product?.category}
                           </p>
                         </td>
-                        <td className="text-sm text-gray-600">
+                        <td className="text-sm text-gray-600 dark:text-gray-400">
                           {sale.agent?.name}
                         </td>
-                        <td className="text-sm">{sale.quantity}</td>
-                        <td className="font-medium">
+                        <td className="text-sm dark:text-gray-300">{sale.quantity}</td>
+                        <td className="font-medium dark:text-white">
                           {formatCurrency(sale.totalAmount)}
                         </td>
-                        <td className="text-sm text-gray-600">
+                        <td className="text-sm text-gray-600 dark:text-gray-400">
                           {formatCurrency(sale.commissionAmount)}
                         </td>
                         <td>
@@ -243,7 +243,7 @@ export default function SalesPage() {
                             {statusLabels[sale.status]}
                           </span>
                         </td>
-                        <td className="text-sm text-gray-500">
+                        <td className="text-sm text-gray-500 dark:text-gray-400">
                           {formatDate(sale.saleDate)}
                         </td>
                         <td>

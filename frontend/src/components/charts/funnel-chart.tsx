@@ -40,7 +40,7 @@ export function FunnelChart({ data }: FunnelChartProps) {
                 {item.count} ({item.percentage.toFixed(1)}%)
               </span>
             </div>
-            <div className="relative h-8 bg-gray-100 dark:bg-gray-700 rounded overflow-hidden">
+            <div className="relative h-8 bg-gray-100 dark:bg-gray-600 rounded overflow-hidden">
               <div
                 className="absolute inset-y-0 left-0 rounded transition-all duration-500"
                 style={{

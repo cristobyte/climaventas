@@ -135,26 +135,26 @@ export default function ReferralsPage() {
                     {canManage && <th>Acciones</th>}
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-200">
+                <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
                   {referrals.map((referral: any) => (
                     <tr key={referral.id}>
                       <td>
                         <div>
-                          <p className="font-medium text-gray-900">
+                          <p className="font-medium text-gray-900 dark:text-white">
                             {referral.referredCustomer?.name}
                           </p>
-                          <p className="text-sm text-gray-500">
+                          <p className="text-sm text-gray-500 dark:text-gray-400">
                             {referral.referredCustomer?.email}
                           </p>
                         </div>
                       </td>
-                      <td className="text-sm">
+                      <td className="text-sm dark:text-gray-300">
                         {referral.referrerCustomer?.name || '-'}
                       </td>
-                      <td className="text-sm">
+                      <td className="text-sm dark:text-gray-300">
                         {referral.partnership?.name || '-'}
                       </td>
-                      <td className="font-medium">
+                      <td className="font-medium dark:text-white">
                         {referral.bonusAmount
                           ? formatCurrency(referral.bonusAmount)
                           : '-'}
@@ -168,7 +168,7 @@ export default function ReferralsPage() {
                           {referralStatusLabels[referral.status]}
                         </span>
                       </td>
-                      <td className="text-sm text-gray-500">
+                      <td className="text-sm text-gray-500 dark:text-gray-400">
                         {formatDate(referral.createdAt)}
                       </td>
                       {canManage && (
@@ -221,21 +221,21 @@ export default function ReferralsPage() {
         {stats?.bySource && (
           <div className="card">
             <div className="card-header">
-              <h2 className="text-lg font-semibold">Referidos por Fuente</h2>
+              <h2 className="text-lg font-semibold dark:text-white">Referidos por Fuente</h2>
             </div>
             <div className="card-body">
               <div className="grid grid-cols-2 gap-4">
-                <div className="p-4 bg-gray-50 rounded-lg text-center">
-                  <p className="text-3xl font-bold text-primary">
+                <div className="p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg text-center">
+                  <p className="text-3xl font-bold text-primary dark:text-primary-300">
                     {stats.bySource.partnerships || 0}
                   </p>
-                  <p className="text-sm text-gray-500 mt-1">Desde Alianzas</p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Desde Alianzas</p>
                 </div>
-                <div className="p-4 bg-gray-50 rounded-lg text-center">
-                  <p className="text-3xl font-bold text-green-600">
+                <div className="p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg text-center">
+                  <p className="text-3xl font-bold text-green-600 dark:text-green-400">
                     {stats.bySource.customers || 0}
                   </p>
-                  <p className="text-sm text-gray-500 mt-1">Desde Clientes</p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Desde Clientes</p>
                 </div>
               </div>
             </div>

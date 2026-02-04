@@ -102,7 +102,7 @@ export default function UsersPage() {
                 <Link
                   key={user.id}
                   href={`/users/${user.id}/edit`}
-                  className="block bg-white rounded-lg shadow-sm border border-gray-200 p-4 hover:shadow-md transition-shadow"
+                  className="block bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 hover:shadow-md transition-shadow"
                 >
                   <div className="flex items-start gap-3">
                     <div className="h-12 w-12 rounded-full bg-primary-100 flex items-center justify-center flex-shrink-0">
@@ -113,8 +113,8 @@ export default function UsersPage() {
                     <div className="flex-1 min-w-0">
                       <div className="flex items-start justify-between">
                         <div className="min-w-0">
-                          <p className="font-medium text-gray-900 truncate">{user.name}</p>
-                          <p className="text-sm text-gray-500 truncate">{user.email}</p>
+                          <p className="font-medium text-gray-900 dark:text-white truncate">{user.name}</p>
+                          <p className="text-sm text-gray-500 dark:text-gray-400 truncate">{user.email}</p>
                         </div>
                         <ChevronRight className="h-5 w-5 text-gray-400 flex-shrink-0 ml-2" />
                       </div>
@@ -130,7 +130,7 @@ export default function UsersPage() {
                           {user.isActive ? 'Activo' : 'Inactivo'}
                         </Badge>
                       </div>
-                      <div className="flex items-center gap-4 mt-2 text-xs text-gray-500">
+                      <div className="flex items-center gap-4 mt-2 text-xs text-gray-500 dark:text-gray-400">
                         <span>{user._count?.assignedCustomers || 0} clientes</span>
                         <span>{user._count?.sales || 0} ventas</span>
                         <span>{(user.commissionRate * 100).toFixed(0)}% com.</span>
@@ -157,7 +157,7 @@ export default function UsersPage() {
                       <th></th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-gray-200">
+                  <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
                     {filteredUsers.map((user: any) => (
                       <tr key={user.id}>
                         <td>
@@ -168,8 +168,8 @@ export default function UsersPage() {
                               </span>
                             </div>
                             <div>
-                              <p className="font-medium text-gray-900">{user.name}</p>
-                              <p className="text-sm text-gray-500">{user.email}</p>
+                              <p className="font-medium text-gray-900 dark:text-white">{user.name}</p>
+                              <p className="text-sm text-gray-500 dark:text-gray-400">{user.email}</p>
                             </div>
                           </div>
                         </td>
@@ -182,19 +182,19 @@ export default function UsersPage() {
                             {roleLabels[user.role]}
                           </Badge>
                         </td>
-                        <td className="text-sm">
+                        <td className="text-sm dark:text-gray-300">
                           {(user.commissionRate * 100).toFixed(0)}%
                         </td>
-                        <td className="text-sm">
+                        <td className="text-sm dark:text-gray-300">
                           {user._count?.assignedCustomers || 0}
                         </td>
-                        <td className="text-sm">{user._count?.sales || 0}</td>
+                        <td className="text-sm dark:text-gray-300">{user._count?.sales || 0}</td>
                         <td>
                           <Badge variant={user.isActive ? 'success' : 'danger'}>
                             {user.isActive ? 'Activo' : 'Inactivo'}
                           </Badge>
                         </td>
-                        <td className="text-sm text-gray-500">
+                        <td className="text-sm text-gray-500 dark:text-gray-400">
                           {formatDate(user.createdAt)}
                         </td>
                         <td>

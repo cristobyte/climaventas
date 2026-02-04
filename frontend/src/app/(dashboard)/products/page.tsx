@@ -104,12 +104,12 @@ export default function ProductsPage() {
               ))}
             </select>
 
-            <label className="flex items-center gap-2 text-sm">
+            <label className="flex items-center gap-2 text-sm dark:text-gray-300">
               <input
                 type="checkbox"
                 checked={showInactive}
                 onChange={(e) => setShowInactive(e.target.checked)}
-                className="rounded border-gray-300"
+                className="rounded border-gray-300 dark:border-gray-600"
               />
               Mostrar inactivos
             </label>
@@ -135,24 +135,24 @@ export default function ProductsPage() {
                       <Badge variant="danger">Inactivo</Badge>
                     )}
                   </div>
-                  <h3 className="font-semibold text-gray-900 mb-1">
+                  <h3 className="font-semibold text-gray-900 dark:text-white mb-1">
                     {product.name}
                   </h3>
                   {product.brand && (
-                    <p className="text-sm text-gray-500 mb-2">
+                    <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">
                       {product.brand} {product.model}
                     </p>
                   )}
-                  <p className="text-xl md:text-2xl font-bold text-primary mb-3">
+                  <p className="text-xl md:text-2xl font-bold text-primary dark:text-primary-300 mb-3">
                     {formatCurrency(product.price)}
                   </p>
-                  <div className="flex items-center justify-between text-sm text-gray-500">
+                  <div className="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400">
                     <span>Comisión: {(product.commissionPercentage * 100).toFixed(0)}%</span>
                     <span>{product._count?.sales || 0} ventas</span>
                   </div>
                 </div>
                 {canEdit && (
-                  <div className="px-4 py-3 bg-gray-50 border-t border-gray-200 flex justify-end gap-2">
+                  <div className="px-4 py-3 bg-gray-50 dark:bg-gray-700/50 border-t border-gray-200 dark:border-gray-700 flex justify-end gap-2">
                     <Link
                       href={`/products/${product.id}/edit`}
                       className="btn-outline text-sm py-1.5"

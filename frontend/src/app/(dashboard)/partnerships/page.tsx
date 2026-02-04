@@ -93,12 +93,12 @@ export default function PartnershipsPage() {
             />
           </div>
 
-          <label className="flex items-center gap-2 text-sm">
+          <label className="flex items-center gap-2 text-sm dark:text-gray-300">
             <input
               type="checkbox"
               checked={showInactive}
               onChange={(e) => setShowInactive(e.target.checked)}
-              className="rounded border-gray-300"
+              className="rounded border-gray-300 dark:border-gray-600"
             />
             Mostrar inactivas
           </label>
@@ -128,33 +128,33 @@ export default function PartnershipsPage() {
                     <th></th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-200">
+                <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
                   {partnerships.map((partnership: any) => (
                     <tr key={partnership.id}>
                       <td>
-                        <p className="font-medium text-gray-900">
+                        <p className="font-medium text-gray-900 dark:text-white">
                           {partnership.name}
                         </p>
                       </td>
                       <td>
                         <div className="text-sm">
-                          <p>{partnership.contactName || '-'}</p>
-                          <p className="text-gray-500">{partnership.email || '-'}</p>
+                          <p className="dark:text-gray-300">{partnership.contactName || '-'}</p>
+                          <p className="text-gray-500 dark:text-gray-400">{partnership.email || '-'}</p>
                         </div>
                       </td>
-                      <td className="text-sm">
+                      <td className="text-sm dark:text-gray-300">
                         {partnership.partnershipType || '-'}
                       </td>
-                      <td className="text-sm">
+                      <td className="text-sm dark:text-gray-300">
                         {(partnership.commissionRate * 100).toFixed(1)}%
                       </td>
-                      <td>{partnership._count?.referrals || 0}</td>
+                      <td className="dark:text-gray-300">{partnership._count?.referrals || 0}</td>
                       <td>
                         <Badge variant={partnership.isActive ? 'success' : 'danger'}>
                           {partnership.isActive ? 'Activa' : 'Inactiva'}
                         </Badge>
                       </td>
-                      <td className="text-sm text-gray-500">
+                      <td className="text-sm text-gray-500 dark:text-gray-400">
                         {formatDate(partnership.createdAt)}
                       </td>
                       <td>
@@ -191,24 +191,24 @@ export default function PartnershipsPage() {
         {stats?.topPartners && stats.topPartners.length > 0 && (
           <div className="card">
             <div className="card-header">
-              <h2 className="text-lg font-semibold">Top Alianzas por Referidos</h2>
+              <h2 className="text-lg font-semibold dark:text-white">Top Alianzas por Referidos</h2>
             </div>
             <div className="card-body">
               <div className="space-y-3">
                 {stats.topPartners.map((partner: any, index: number) => (
                   <div
                     key={partner.id}
-                    className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
+                    className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg"
                   >
                     <div className="flex items-center gap-3">
-                      <span className="text-lg font-bold text-gray-400">
+                      <span className="text-lg font-bold text-gray-400 dark:text-gray-500">
                         #{index + 1}
                       </span>
-                      <span className="font-medium">{partner.name}</span>
+                      <span className="font-medium dark:text-white">{partner.name}</span>
                     </div>
                     <div className="text-right">
-                      <p className="font-medium">{partner.referrals} referidos</p>
-                      <p className="text-sm text-green-600">
+                      <p className="font-medium dark:text-white">{partner.referrals} referidos</p>
+                      <p className="text-sm text-green-600 dark:text-green-400">
                         {partner.converted} convertidos
                       </p>
                     </div>

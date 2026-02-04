@@ -63,22 +63,22 @@ export default function LeadsPage() {
         {/* Summary Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-4 gap-3 md:gap-4 mb-6">
           <div className="card p-4">
-            <p className="text-sm text-gray-500">Total Leads</p>
-            <p className="text-xl md:text-2xl font-semibold">{stats?.total || 0}</p>
+            <p className="text-sm text-gray-500 dark:text-gray-400">Total Leads</p>
+            <p className="text-xl md:text-2xl font-semibold dark:text-white">{stats?.total || 0}</p>
           </div>
           <div className="card p-4">
-            <p className="text-sm text-gray-500">Activos</p>
-            <p className="text-xl md:text-2xl font-semibold">
+            <p className="text-sm text-gray-500 dark:text-gray-400">Activos</p>
+            <p className="text-xl md:text-2xl font-semibold dark:text-white">
               {(stats?.total || 0) - (stats?.byStatus?.WON || 0) - (stats?.byStatus?.LOST || 0)}
             </p>
           </div>
           <div className="card p-4">
-            <p className="text-sm text-gray-500">Prob. Cierre Prom.</p>
-            <p className="text-xl md:text-2xl font-semibold">{avgClosureChance.toFixed(0)}%</p>
+            <p className="text-sm text-gray-500 dark:text-gray-400">Prob. Cierre Prom.</p>
+            <p className="text-xl md:text-2xl font-semibold dark:text-white">{avgClosureChance.toFixed(0)}%</p>
           </div>
           <div className="card p-4">
-            <p className="text-sm text-gray-500">Valor Estimado</p>
-            <p className="text-xl md:text-2xl font-semibold">{formatCurrency(totalEstimatedValue)}</p>
+            <p className="text-sm text-gray-500 dark:text-gray-400">Valor Estimado</p>
+            <p className="text-xl md:text-2xl font-semibold dark:text-white">{formatCurrency(totalEstimatedValue)}</p>
           </div>
         </div>
 
@@ -116,17 +116,17 @@ export default function LeadsPage() {
               {leads.map((lead: any) => (
                 <div
                   key={lead.id}
-                  className="bg-white rounded-lg shadow-sm border border-gray-200 p-4"
+                  className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4"
                 >
                   <div className="flex items-start justify-between mb-3">
                     <div className="flex-1 min-w-0">
                       <Link
                         href={`/leads/${lead.id}`}
-                        className="font-medium text-gray-900 hover:text-primary block truncate"
+                        className="font-medium text-gray-900 dark:text-white hover:text-primary dark:hover:text-primary-300 block truncate"
                       >
                         {lead.title}
                       </Link>
-                      <p className="text-sm text-gray-500 truncate">
+                      <p className="text-sm text-gray-500 dark:text-gray-400 truncate">
                         {lead.customer?.name}
                       </p>
                     </div>
@@ -140,13 +140,13 @@ export default function LeadsPage() {
                   </div>
 
                   <div className="flex items-center justify-between text-sm mb-3">
-                    <span className="text-gray-500">{lead.closureChance}% prob.</span>
-                    <span className="font-semibold text-gray-900">
+                    <span className="text-gray-500 dark:text-gray-400">{lead.closureChance}% prob.</span>
+                    <span className="font-semibold text-gray-900 dark:text-white">
                       {lead.estimatedValue ? formatCurrency(lead.estimatedValue) : '-'}
                     </span>
                   </div>
 
-                  <div className="flex items-center justify-between pt-3 border-t border-gray-100">
+                  <div className="flex items-center justify-between pt-3 border-t border-gray-100 dark:border-gray-700">
                     <span className="text-xs text-gray-400">
                       {formatDate(lead.createdAt)}
                     </span>
@@ -200,13 +200,13 @@ export default function LeadsPage() {
                       <th>Acciones</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-gray-200">
+                  <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
                     {leads.map((lead: any) => (
                       <tr key={lead.id}>
                         <td>
                           <Link
                             href={`/leads/${lead.id}`}
-                            className="font-medium text-gray-900 hover:text-primary"
+                            className="font-medium text-gray-900 dark:text-white hover:text-primary dark:hover:text-primary-300"
                           >
                             {lead.title}
                           </Link>
@@ -214,17 +214,17 @@ export default function LeadsPage() {
                         <td>
                           <Link
                             href={`/customers/${lead.customer?.id}`}
-                            className="text-sm text-gray-600 hover:text-primary"
+                            className="text-sm text-gray-600 dark:text-gray-400 hover:text-primary dark:hover:text-primary-300"
                           >
                             {lead.customer?.name}
                           </Link>
                         </td>
-                        <td className="text-sm text-gray-600">
+                        <td className="text-sm text-gray-600 dark:text-gray-400">
                           {lead.agent?.name}
                         </td>
                         <td>
                           <div className="flex items-center gap-2">
-                            <div className="w-16 bg-gray-200 rounded-full h-2">
+                            <div className="w-16 bg-gray-200 dark:bg-gray-600 rounded-full h-2">
                               <div
                                 className={`h-2 rounded-full ${
                                   lead.closureChance >= 70
@@ -236,10 +236,10 @@ export default function LeadsPage() {
                                 style={{ width: `${lead.closureChance}%` }}
                               />
                             </div>
-                            <span className="text-sm">{lead.closureChance}%</span>
+                            <span className="text-sm dark:text-gray-300">{lead.closureChance}%</span>
                           </div>
                         </td>
-                        <td className="font-medium">
+                        <td className="font-medium dark:text-white">
                           {lead.estimatedValue ? formatCurrency(lead.estimatedValue) : '-'}
                         </td>
                         <td>
@@ -251,7 +251,7 @@ export default function LeadsPage() {
                             {leadStatusLabels[lead.status]}
                           </span>
                         </td>
-                        <td className="text-sm text-gray-500">
+                        <td className="text-sm text-gray-500 dark:text-gray-400">
                           {formatDate(lead.createdAt)}
                         </td>
                         <td>
