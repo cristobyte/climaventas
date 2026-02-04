@@ -187,6 +187,7 @@ export class SalesService {
         saleDate: createSaleDto.saleDate ? new Date(createSaleDto.saleDate) : new Date(),
         leadId: createSaleDto.leadId,
         quotationUrl: createSaleDto.quotationUrl,
+        invoiceUrl: createSaleDto.invoiceUrl,
       },
       include: {
         customer: true,

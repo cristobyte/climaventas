@@ -198,6 +198,23 @@ export default function SaleDetailPage() {
                       </div>
                     </div>
                   )}
+                  {sale.invoiceUrl && (
+                    <div className="flex items-start gap-3">
+                      <FileText className="h-5 w-5 text-gray-400 mt-0.5" />
+                      <div>
+                        <p className="text-sm text-gray-500">Factura</p>
+                        <a
+                          href={sale.invoiceUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-primary hover:underline inline-flex items-center gap-1"
+                        >
+                          Ver documento
+                          <ExternalLink className="h-4 w-4" />
+                        </a>
+                      </div>
+                    </div>
+                  )}
                   {sale.lead && (
                     <div className="flex items-start gap-3">
                       <Target className="h-5 w-5 text-gray-400 mt-0.5" />

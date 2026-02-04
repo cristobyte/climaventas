@@ -28,6 +28,7 @@ export default function NewSalePage() {
     notes: '',
     leadId: preselectedLeadId || '',
     quotationUrl: '',
+    invoiceUrl: '',
   });
 
   // If we have a preselected lead, fetch its details
@@ -318,7 +319,7 @@ export default function NewSalePage() {
                   </select>
                 </div>
 
-                <div className="md:col-span-2">
+                <div>
                   <label htmlFor="quotationUrl" className="label">
                     <FileText className="h-4 w-4 inline mr-1" />
                     URL de Cotización
@@ -340,12 +341,44 @@ export default function NewSalePage() {
                       className="inline-flex items-center gap-1 text-sm text-primary hover:underline mt-2"
                     >
                       <ExternalLink className="h-4 w-4" />
-                      Abrir cotización en nueva pestaña
+                      Abrir cotización
                     </a>
                   )}
                   {!formData.quotationUrl && (
                     <p className="text-xs text-gray-500 mt-1">
-                      Enlace al documento de cotización (Google Drive, Dropbox, etc.)
+                      Enlace al documento de cotización
+                    </p>
+                  )}
+                </div>
+
+                <div>
+                  <label htmlFor="invoiceUrl" className="label">
+                    <FileText className="h-4 w-4 inline mr-1" />
+                    URL de Factura
+                  </label>
+                  <input
+                    id="invoiceUrl"
+                    name="invoiceUrl"
+                    type="url"
+                    value={formData.invoiceUrl}
+                    onChange={handleChange}
+                    className="input"
+                    placeholder="https://drive.google.com/..."
+                  />
+                  {formData.invoiceUrl && (
+                    <a
+                      href={formData.invoiceUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1 text-sm text-primary hover:underline mt-2"
+                    >
+                      <ExternalLink className="h-4 w-4" />
+                      Abrir factura
+                    </a>
+                  )}
+                  {!formData.invoiceUrl && (
+                    <p className="text-xs text-gray-500 mt-1">
+                      Enlace al documento de factura
                     </p>
                   )}
                 </div>

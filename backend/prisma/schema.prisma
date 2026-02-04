@@ -108,6 +108,7 @@ model Sale {
   status           String   @default("PENDING")
   paymentMethod    String?  @map("payment_method")
   quotationUrl     String?  @map("quotation_url")
+  invoiceUrl       String?  @map("invoice_url")
   notes            String?
   saleDate         DateTime @default(now()) @map("sale_date")
   createdAt        DateTime @default(now()) @map("created_at")

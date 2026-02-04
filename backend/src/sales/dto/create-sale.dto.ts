@@ -46,4 +46,9 @@ export class CreateSaleDto {
   @IsOptional()
   @IsString()
   quotationUrl?: string;
+
+  @ApiPropertyOptional({ description: 'URL de la factura' })
+  @IsOptional()
+  @IsString()
+  invoiceUrl?: string;
 }
