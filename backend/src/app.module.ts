@@ -12,6 +12,7 @@ import { ReferralsModule } from './referrals/referrals.module';
 import { AnalyticsModule } from './analytics/analytics.module';
 import { LeadsModule } from './leads/leads.module';
 import { SeedModule } from './seed/seed.module';
+import { UploadModule } from './upload/upload.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { SeedModule } from './seed/seed.module';
     ReferralsModule,
     AnalyticsModule,
     SeedModule,
+    UploadModule,
   ],
 })
 export class AppModule {}

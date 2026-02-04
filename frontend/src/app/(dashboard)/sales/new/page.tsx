@@ -6,8 +6,9 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 import { Header } from '@/components/layout';
 import { salesApi, customersApi, productsApi, leadsApi } from '@/lib/api';
 import { formatCurrency, categoryLabels } from '@/lib/utils';
-import { ArrowLeft, Save, Search, ChevronDown, FileText, ExternalLink } from 'lucide-react';
+import { ArrowLeft, Save, Search, ChevronDown, FileText } from 'lucide-react';
 import Link from 'next/link';
+import { PdfUpload } from '@/components/ui/pdf-upload';
 
 export default function NewSalePage() {
   const router = useRouter();
@@ -319,35 +320,16 @@ export default function NewSalePage() {
                 </div>
 
                 <div className="md:col-span-2">
-                  <label htmlFor="quotationUrl" className="label">
+                  <label className="label">
                     <FileText className="h-4 w-4 inline mr-1" />
-                    URL de Cotización
+                    Cotización (PDF)
                   </label>
-                  <input
-                    id="quotationUrl"
-                    name="quotationUrl"
-                    type="url"
+                  <PdfUpload
                     value={formData.quotationUrl}
-                    onChange={handleChange}
-                    className="input"
-                    placeholder="https://drive.google.com/..."
+                    onChange={(url) =>
+                      setFormData((prev) => ({ ...prev, quotationUrl: url }))
+                    }
                   />
-                  {formData.quotationUrl && (
-                    <a
-                      href={formData.quotationUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1 text-sm text-primary hover:underline mt-2"
-                    >
-                      <ExternalLink className="h-4 w-4" />
-                      Abrir cotización en nueva pestaña
-                    </a>
-                  )}
-                  {!formData.quotationUrl && (
-                    <p className="text-xs text-gray-500 mt-1">
-                      Enlace al documento de cotización (Google Drive, Dropbox, etc.)
-                    </p>
-                  )}
                 </div>
 
                 <div className="md:col-span-2">
