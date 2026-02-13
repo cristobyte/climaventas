@@ -7,15 +7,16 @@ const prisma = new PrismaClient();
 async function main() {
   console.log('🌱 Seeding database...');
 
-  // Clear existing data
+  // Clear existing data (order matters for SQLite foreign key constraints)
+  await prisma.refreshToken.deleteMany();
   await prisma.referral.deleteMany();
   await prisma.interaction.deleteMany();
   await prisma.sale.deleteMany();
+  await prisma.lead.deleteMany();
   await prisma.commissionRule.deleteMany();
   await prisma.customer.deleteMany();
   await prisma.product.deleteMany();
   await prisma.partnership.deleteMany();
-  await prisma.refreshToken.deleteMany();
   await prisma.user.deleteMany();
 
   console.log('📦 Creating users...');

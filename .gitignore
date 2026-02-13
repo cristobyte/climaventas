@@ -12,6 +12,7 @@ out/
 # Database
 *.db
 *.db-journal
+backend/data/
 
 # Environment files
 .env
