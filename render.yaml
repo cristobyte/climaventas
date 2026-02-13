@@ -1,10 +1,6 @@
 # Render.com Blueprint for ClimaVentas CRM
 # Deploy both backend and frontend services
-
-databases:
-  - name: climaventas-db
-    plan: free
-    region: oregon
+# Uses SQLite with fresh seed data on each deploy (free tier limitation)
 
 services:
   # Backend API Service
@@ -15,14 +11,12 @@ services:
     plan: free
     rootDir: backend
     buildCommand: NODE_ENV=development npm ci && npm run prisma:generate && npm run build
-    startCommand: npx prisma db push --skip-generate && node dist/src/main
+    startCommand: mkdir -p data && npx prisma db push --skip-generate && npm run prisma:seed && node dist/src/main
     envVars:
       - key: NODE_ENV
         value: production
       - key: DATABASE_URL
-        fromDatabase:
-          name: climaventas-db
-          property: connectionString
+        value: file:./data/climaventas.db
       - key: JWT_SECRET
         generateValue: true
       - key: JWT_EXPIRES_IN
