@@ -1,8 +1,23 @@
 import { PrismaClient } from '@prisma/client';
+import { PrismaLibSQL } from '@prisma/adapter-libsql';
+import { createClient } from '@libsql/client';
 import { Role, CustomerStage, CustomerSource, ProductCategory, SaleStatus, InteractionType, ReferralStatus, CommissionRuleType } from '../src/common/constants';
 import * as bcrypt from 'bcrypt';
 
-const prisma = new PrismaClient();
+function createPrismaClient(): PrismaClient {
+  const tursoUrl = process.env.TURSO_DATABASE_URL;
+  const tursoAuthToken = process.env.TURSO_AUTH_TOKEN;
+
+  if (tursoUrl && tursoAuthToken) {
+    const libsql = createClient({ url: tursoUrl, authToken: tursoAuthToken });
+    const adapter = new PrismaLibSQL(libsql);
+    return new PrismaClient({ adapter });
+  }
+
+  return new PrismaClient();
+}
+
+const prisma = createPrismaClient();
 
 async function main() {
   console.log('🌱 Seeding database...');

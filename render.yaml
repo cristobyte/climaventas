@@ -1,6 +1,6 @@
 # Render.com Blueprint for ClimaVentas CRM
 # Deploy both backend and frontend services
-# Uses SQLite with fresh seed data on each deploy (free tier limitation)
+# Uses Turso (cloud SQLite) for persistent data
 
 services:
   # Backend API Service
@@ -11,12 +11,16 @@ services:
     plan: free
     rootDir: backend
     buildCommand: NODE_ENV=development npm ci && npm run prisma:generate && npm run build
-    startCommand: mkdir -p data && npx prisma db push --skip-generate && npm run prisma:seed && node dist/src/main
+    startCommand: node dist/src/main
     envVars:
       - key: NODE_ENV
         value: production
       - key: DATABASE_URL
         value: file:./data/climaventas.db
+      - key: TURSO_DATABASE_URL
+        sync: false
+      - key: TURSO_AUTH_TOKEN
+        sync: false
       - key: JWT_SECRET
         generateValue: true
       - key: JWT_EXPIRES_IN
